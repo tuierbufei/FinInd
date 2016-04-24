@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>公司价值分析</title>
+        <script src='http://code.jquery.com/jquery-1.9.1.js' type='text/javascript'></script>
+
+        <link rel="stylesheet" type="text/css" href="assert/css/bootstrap.min.css"/>
+        <script src="assert/js/bootstrap.min.js" type="text/javascript"></script>
+
+        <!--<script src="http://rawgit.com/douglascrockford/JSON-js/master/json2.js" type="text/javascript"></script>-->
+        <script src="script/report.js" type="text/javascript"></script>
+
+        <link rel="stylesheet" type="text/css" href="style/main.css"/>
+        <script src="script/report.js" type="text/javascript"></script>
+        <script src="script/main.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" id="stkcd" class="form-control" placeholder="输入股票代码">
+                </div>
+                <button type="submit" id="stkcdSearch" class="btn btn-default">Submit</button>
+            </div>
+        </nav>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#benefit" aria-controls="benefit" role="tab" data-toggle="tab">综合损益表</a>
+            </li>
+            <li role="presentation">
+                <a href="#debt" aria-controls="debt" role="tab" data-toggle="tab">资产负债表</a>
+            </li>
+            <li role="presentation">
+                <a href="#cash" aria-controls="cash" role="tab" data-toggle="tab">现金流量表</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="benefit">benfit</div>
+            <div role="tabpanel" class="tab-pane" id="debt">debt</div>
+            <div role="tabpanel" class="tab-pane" id="cash">cash</div>
+        </div>
+    </body>
+</html>
