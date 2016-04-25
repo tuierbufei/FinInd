@@ -27,7 +27,15 @@ function createReport(panel, stkcd, type, callBack) {
 
                     $.each(this, function(i){
                         tRow = $('<tr>');
-                        tRow.append($('<td>').html(titles[i]));
+                        var titleLabel = '';
+                        if(titles[i].json && (titles[i].json instanceof Array)) {
+                            for(var j = 0; j< titles[i].json.length; j++) {
+                                titleLabel += j>0 && titles[i].json[j] != '' ? ('(' + titles[i].json[j] +')') :titles[i].json[j];
+                            }
+                        } else {
+                            titleLabel = titles[i];
+                        }
+                        tRow.append($('<td>').html(titleLabel));
                         $.each(this.json, function(j){
                             tCell = $('<td>').html(this);
                             tRow.append(tCell)

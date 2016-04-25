@@ -3,33 +3,48 @@
  */
 window.onload = function () {
     var isReload = {
+            main: true,
             benefit: true,
             debt: true,
             cash: true,
         },
-        activeTab = 'benefit',
+        subReport = {
+            main : ['main','each','grow','pay','operate']
+        },
+        loadCount,
+        activeTabName = 'main',
         stkcd;
 
     var callBack = function (type) {
-        $('#stkcdSearch').button('reset');
-
         isReload[type] = true;
+        loadCount --;
+        if(loadCount == 0) {
+            $('#stkcdSearch').button('reset');
+        }
     };
 
     $('#stkcdSearch').on('click', function () {
         var $btn = $(this).button('loading');
         stkcd = $('#stkcd').val();
+        loadCount = 0;
         $.each(isReload, function (type) {
             isReload[type] = false;
+            if(subReport[type]){
+                $.each(subReport[type], function (i) {
+                    loadCount++;
+                    createReport($('#' + type), stkcd, subReport[type][i], callBack);
+                });
+            } else {
+                loadCount++;
+                createReport($('#' + type), stkcd, type, callBack);
+            }
         });
-
-        createReport($('#' + activeTab), stkcd, activeTab, callBack);
     });
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        activeTab = $(e.target).attr('aria-controls');
-        if (!isReload[activeTab]) {
-            createReport($('#' + activeTab), stkcd, activeTab, callBack);
+        activeTabName = $(e.target).attr('aria-controls');
+        if (!isReload[activeTabName]) {
+            createReport($('#' + activeTabName), stkcd, activeTabName, callBack);
         }
     });
 }
