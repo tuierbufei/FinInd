@@ -6,7 +6,7 @@ window.onload = function () {
             main: true,
             benefit: true,
             debt: true,
-            cash: true,
+            cash: true
         },
         subReport = {
             main : ['main','each','grow','pay','operate']
@@ -43,7 +43,7 @@ window.onload = function () {
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         activeTabName = $(e.target).attr('aria-controls');
-        if (!isReload[activeTabName]) {
+        if (!isReload[activeTabName] && activeTabName != 'custom') {
             createReport($('#' + activeTabName), stkcd, activeTabName, callBack);
         }
     });
