@@ -1,8 +1,8 @@
 /**
  * Created by cxh on 2016/4/25.
  */
-var customData = ['营业收入','营业收入增长率','毛利率','管理费用', '销售费用', '财务费用','扣非净利润', '资产负债比率', '流动比率', '速动比率', '存货周转率', '应收账款周转率', '固定资产','资产总计','净资产收益率', '经营现金流量净额', '净利率'];
-var customData = {};
+var customDataYear = [];
+var customData = {营业收入:{}, 营业收入增长率:{}, 毛利率:{}, 管理费用:{}, 销售费用:{}, 财务费用:{}, 扣非净利润:{}, 资产负债比率:{}, 流动比率:{}, 速动比率:{}, 存货周转率:{}, 应收账款周转率:{}, 固定资产:{}, 资产总计:{}, 净资产收益率:{}, 经营现金流量净额:{}, 净利率:{}};
 var customColumn = ['营业收入',
     '营业收入增长率',
     '毛利率',
@@ -21,6 +21,23 @@ var customColumn = ['营业收入',
     '净资产收益率ROE',
     '总资产收益率',
     '经营性现金流净额/净利润'];
+var customColumnAndDataMap = {
+    营业收入: '营业收入',
+    营业收入增长率 : '营业收入增长率',
+    毛利率 : '毛利率',
+    三项费用率 : '三项费用率',
+    销售费用率 : '销售费用率'
+
+}
+function createCustomReport(panel) {
+    var table = $('<table class="table table-bordered">');
+    $.each(customColumn, function(i) {
+        var tr = $('<tr>');
+
+        customColumn[i]
+    });
+}
+
 function createReport(panel, stkcd, type, callBack) {
     panel.empty();
     $.getJSON("http://query.yahooapis.com/v1/public/yql", {
@@ -62,6 +79,13 @@ function createReport(panel, stkcd, type, callBack) {
                             titleLabel = titles[i];
                         }
                         tRow.append($('<th style="width:20%">').html(titleLabel));
+                        if (key == 'year' && customData.hasOwnProperty(titles[i].json[j])) {
+                            customData[titles[i].json[j]] = this.json;
+                        }
+                        if(key == 'year' && i == 0) {
+                            customDataYear = this.json;
+                        }
+
                         $.each(this.json, function (j) {
                             // only show 10 year for year term
                             if(j>10 && key == 'year') {
@@ -69,7 +93,6 @@ function createReport(panel, stkcd, type, callBack) {
                             }else if(j>12){
                                 return false;
                             }
-
 
                             if (i == 0) {
                                 tCell = $('<th>').html(this);
