@@ -20,6 +20,7 @@ window.onload = function () {
         loadCount --;
         if(loadCount == 0) {
             $('#stkcdSearch').button('reset');
+            createCustomReport($('#custom'));
         }
     };
 
