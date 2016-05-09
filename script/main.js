@@ -28,6 +28,11 @@ window.onload = function () {
         var $btn = $(this).button('loading');
         stkcd = $('#stkcd').val();
         loadCount = 0;
+        customDataYear = [];
+        $.each(customData, function(columnName){
+            customData[columnName] = [];
+        });
+        console.log(customData);
         $.each(isReload, function (type) {
             isReload[type] = false;
             if(subReport[type]){
