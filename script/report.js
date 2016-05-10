@@ -2,30 +2,34 @@
  * Created by cxh on 2016/4/25.
  */
 var customDataYear = [];
-var customData = {营业收入:[], 营业收入增长率:[], 毛利率:[], 管理费用:[], 销售费用:[], 财务费用:[], 扣非净利润:[], 资产负债比率:[], 流动比率:[], 速动比率:[], 存货周转率:[], 应收账款周转率:[], 固定资产:[], 资产总计:[], 净资产收益率:[], 经营现金流量净额:[], 净利润:[]};
-var customColumn = ['营业收入',
-    '营业收入增长率',
-    '毛利率',
-    '三项费用率',
-    '销售费用率',
-    '管理费用率',
-    '财务费用率',
-    '扣非净利润率',
-    '净利润增长率',
-    '资产负债率',
-    '流动比率',
-    '速动比率',
-    '存货周转率',
-    '应收账款周转率',
-    '固定资产比重',
-    '净资产收益率ROE',
-    '总资产收益率',
-    '经营性现金流净额/净利润'];
+var customData = {营业收入:[], 营业总收入同比增长率:[], 销售毛利率:[], 管理费用:[], 销售费用:[], 财务费用:[], 扣非净利润:[], 资产负债比率:[], 流动比率:[], 速动比率:[], 存货周转率:[], 应收账款周转天数:[], 固定资产:[], 资产总计:[], 净资产收益率:[], 经营现金流量净额:[], 净利润:[]};
+var customColumn = {
+    营业收入:[],
+    营业收入增长率:[],
+    毛利率:[],
+    三项费用率:[],
+    销售费用率:[],
+    管理费用率:[],
+    财务费用率:[],
+    扣非净利润率:[],
+    净利润增长率:[],
+    资产负债率:[],
+    流动比率:[],
+    速动比率:[],
+    存货周转率:[],
+    应收账款周转率:[],
+    固定资产比重:[],
+    净资产收益率ROE:[],
+    总资产收益率:[],
+    经营性现金流净额比净利润:[]
+};
+
+var customDataLoadedColumn = [];
 
 var customColumnFormula = {
     营业收入: '营业收入',
-    营业收入增长率 : '营业收入增长率',
-    毛利率 : '毛利率',
+    营业收入增长率 : '营业总收入同比增长率',
+    毛利率 : '销售毛利率',
     三项费用率 : '(管理费用+销售费用+财务费用)/营业收入',
     销售费用率 : '销售费用/营业收入',
     管理费用率 : '管理费用/营业收入',
@@ -36,11 +40,11 @@ var customColumnFormula = {
     流动比率 : '流动比率',
     速动比率 : '速动比率',
     存货周转率 : '存货周转率',
-    应收账款周转率 : '应收账款周转率',
+    应收账款周转率 : '360/应收账款周转天数',
     固定资产比重 : '固定资产/资产总计',
     净资产收益率ROE : '净资产收益率',
-    总资产收益率 : '净利率/资产总计',
-    经营性现金流净额比净利润:'经营现金流量净额/净利率'
+    总资产收益率 : '净利润/资产总计',
+    经营性现金流净额比净利润:'经营现金流量净额/净利润'
 };
 
 function createCustomReport(panel) {
@@ -52,21 +56,85 @@ function createCustomReport(panel) {
             tCell;
         tRow.append($('<td>').html(this));
         if(this.match(/[\+\-\*\/\(\)]/) != null) {
-            var output = formulaParse(customColumnFormula[columnName]);
-            console.log(output);
-            // 计算公司 to do
+            var formula = formulaParse(customColumnFormula[columnName]);
+            var stack = [];
+            var temp = [];
+            while (formula.length > 0) {
+                if(formula[0].match(/[\+\-\*\/]/)) {
+                    var operator = formula.shift();
+                    var operand1 = stack.shift();
+                    var operand2 = stack.shift();
+                    var left = [], right = [];
+                    if(operand1 == 'temp') {
+                        left = temp;
+                    } else {
+                        //if(operand1.indexOf('上一年') != -1){
+                        //
+                        //} else {
+                            left = customData[operand1];
+                        //}
+                    }
+
+                    if(operand2 == 'temp') {
+                        right = temp;
+                    } else {
+                        right = customData[operand2];
+                    }
+
+                    if(left == undefined || right == undefined) {
+                        continue;
+                    }
+                    var len = Math.min(left.length, right.length);
+                    for (var i = 0; i< len; i++) {
+                        temp[i] = calcuate(operator, parseFloat(left[i]), parseFloat(right[i]));
+                    }
+                    stack.unshift('temp');
+                } else {
+                    stack.unshift(formula.shift());
+                }
+            }
+
+            $.each(temp, function(i){
+                if(i > 10) {
+                    return false;
+                }
+                tCell = $('<td>').html(this);
+                tRow.append(tCell);
+            });
         } else {
-            $.each(customData[customColumnFormula[columnName]], function(data){
-                tCell = $('<td>').html(data);
+            $.each(customData[this], function(i){
+                if(i > 10) {
+                    return false;
+                }
+
+                tCell = $('<td>').html(this);
+                tRow.append(tCell);
             });
         }
 
         table.append(tRow);
     });
+
+    panel.append(table);
+}
+
+function calcuate(operator, operand1, operand2){
+    var value = 0
+    switch (operator) {
+        case '+' : value = operand1 + operand2;
+            break;
+        case '-' : value = operand1 - operand2;
+            break;
+        case '*' : value = operand1 * operand2;
+            break;
+        case '/' : value = operand1 / operand2;
+            break;
+    }
+
+    return value.toFixed(2);
 }
 
 function createReport(panel, stkcd, type, callBack) {
-    panel.empty();
     $.getJSON("http://query.yahooapis.com/v1/public/yql", {
         q: 'select * from json where url=\"http://basic.10jqka.com.cn/' + stkcd + '/flash/' + type + '.txt\"',
         format: "json"
@@ -121,10 +189,13 @@ function createReport(panel, stkcd, type, callBack) {
                                     customDataYear.push(this);
                                 });
                                 // custom data assign
-                            } else if(customData.hasOwnProperty(columName)) {
+                            } else if(customData.hasOwnProperty(columName) && customDataLoadedColumn.indexOf(columName) == -1) {
                                 $.each(this.json, function(data){
                                     customData[columName].push(this);
                                 });
+
+                                // avoid duplicate assign value
+                                customDataLoadedColumn.push(columName);
                             }
                         }
 
@@ -132,10 +203,10 @@ function createReport(panel, stkcd, type, callBack) {
                             if(i == 0 && customDataYear[0] !=  this.json[i]) {
                                 customDataYear.unshift(this.json[i]);
                             } else if(customData.hasOwnProperty(columName)){
-                                if(columName == '扣非净利润') {
-                                    var i = 0;
+                                // avoid duplicate assign value
+                                if(customData[columName][0] != this.json[0]) {
+                                    customData[columName].unshift(this.json[0]);
                                 }
-                                customData[columName].unshift(this.json[i]);
                             }
                         }
 

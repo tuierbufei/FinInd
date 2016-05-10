@@ -20,6 +20,7 @@ window.onload = function () {
         loadCount --;
         if(loadCount == 0) {
             $('#stkcdSearch').button('reset');
+            $('#custom').empty();
             createCustomReport($('#custom'));
         }
     };
@@ -29,12 +30,14 @@ window.onload = function () {
         stkcd = $('#stkcd').val();
         loadCount = 0;
         customDataYear = [];
+        customDataLoadedColumn = [];
         $.each(customData, function(columnName){
             customData[columnName] = [];
         });
         console.log(customData);
         $.each(isReload, function (type) {
             isReload[type] = false;
+            $('#' + type).empty();
             if(subReport[type]){
                 $.each(subReport[type], function (i) {
                     loadCount++;
