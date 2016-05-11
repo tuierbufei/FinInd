@@ -35,7 +35,7 @@ var customColumnFormula = {
     管理费用率 : '管理费用/营业收入',
     财务费用率 : '财务费用/营业收入',
     扣非净利润率: '扣非净利润/营业收入',
-    净利润增长率 : '(净利率-上一年净利率)/营业收入',
+    净利润增长率 : '(净利润-上一年净利润)/上一年净利润',
     资产负债率 : '资产负债比率',
     流动比率 : '流动比率',
     速动比率 : '速动比率',
@@ -51,43 +51,81 @@ function createCustomReport(panel) {
     var table = $('<table class="table table-bordered">');
 
     console.log(customData);
-    $.each(customColumnFormula, function(columnName){
-        var tRow = $('<tr>'),
-            tCell;
+    var tRow = $('<tr>'),
+        tCell;
+    tRow.append($('<td>').html('科目\\时间'));
+    $.each(customDataYear, function(i){
         tRow.append($('<td>').html(this));
+    });
+
+    table.append(tRow);
+    $.each(customColumnFormula, function(columnName){
+        tRow = $('<tr>');
+        tRow.append($('<td>').html(columnName));
         if(this.match(/[\+\-\*\/\(\)]/) != null) {
             var formula = formulaParse(customColumnFormula[columnName]);
             var stack = [];
             var temp = [];
             while (formula.length > 0) {
                 if(formula[0].match(/[\+\-\*\/]/)) {
+                    console.log(formula);
+                    console.log(stack);
                     var operator = formula.shift();
                     var operand1 = stack.shift();
                     var operand2 = stack.shift();
                     var left = [], right = [];
                     if(operand1 == 'temp') {
                         left = temp;
+                    } else if(operand1.match(/^[\-\+]?\d+(\.\d+)?/)){
+                        left = operand2;
                     } else {
-                        //if(operand1.indexOf('上一年') != -1){
-                        //
-                        //} else {
+                        if(operand1.indexOf('上一年') != -1){
+                            left = customData[operand1.replace(/上一年/, '')];
+                            left = left.slice(1, left.length);
+                        } else {
                             left = customData[operand1];
-                        //}
+                        }
                     }
 
+                    console.log(operand2);
                     if(operand2 == 'temp') {
                         right = temp;
+                    } else if(operand2.match(/^[\-\+]?\d+(\.\d+)?/)){
+                        right = operand2;
                     } else {
-                        right = customData[operand2];
+                        if(operand2.indexOf('上一年') != -1) {
+                            left = customData[operand1.replace(/上一年/, '')];
+                            left = left.slice(1, left.length);
+                        } else {
+                            right = customData[operand2];
+                        }
                     }
 
                     if(left == undefined || right == undefined) {
                         continue;
                     }
-                    var len = Math.min(left.length, right.length);
-                    for (var i = 0; i< len; i++) {
-                        temp[i] = calcuate(operator, parseFloat(left[i]), parseFloat(right[i]));
+
+                    var len = 0;
+                    if(left instanceof Array && right instanceof Array) {
+                        len = Math.min(left.length, right.length);
+
+                        for (var i = 0; i< len; i++) {
+                            temp[i] = calcuate(operator, parseFloat(left[i]), parseFloat(right[i]));
+                        }
+                    } else if(left instanceof Array){
+                        len = left.length;
+
+                        for (var i = 0; i< len; i++) {
+                            temp[i] = calcuate(operator, left, parseFloat(right[i]));
+                        }
+                    } else if(right instanceof Array) {
+                        len = right.length;
+
+                        for (var i = 0; i< len; i++) {
+                            temp[i] = calcuate(operator, parseFloat(left[i]), right);
+                        }
                     }
+
                     stack.unshift('temp');
                 } else {
                     stack.unshift(formula.shift());
@@ -184,7 +222,7 @@ function createReport(panel, stkcd, type, callBack) {
 
                         if(key == 'year') {
                             // assign custom year by year financial repoart
-                            if(i == 0 && customDataYear.length == 0) {
+                            if(i == 0 && customDataYear.length <= 1) {
                                 $.each(this.json, function(data){
                                     customDataYear.push(this);
                                 });
