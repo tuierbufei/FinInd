@@ -1,31 +1,14 @@
 /**
  * Created by cxh on 2016/4/25.
  */
+// for custom column year
 var customDataYear = [];
-var customData = {营业收入:[], 营业总收入同比增长率:[], 销售毛利率:[], 管理费用:[], 销售费用:[], 财务费用:[], 扣非净利润:[], 资产负债比率:[], 流动比率:[], 速动比率:[], 存货周转率:[], 应收账款周转天数:[], 固定资产:[], 资产总计:[], 净资产收益率:[], 经营现金流量净额:[], 净利润:[]};
-var customColumn = {
-    营业收入:[],
-    营业收入增长率:[],
-    毛利率:[],
-    三项费用率:[],
-    销售费用率:[],
-    管理费用率:[],
-    财务费用率:[],
-    扣非净利润率:[],
-    净利润增长率:[],
-    资产负债率:[],
-    流动比率:[],
-    速动比率:[],
-    存货周转率:[],
-    应收账款周转率:[],
-    固定资产比重:[],
-    净资产收益率ROE:[],
-    总资产收益率:[],
-    经营性现金流净额比净利润:[]
-};
-
+// for custom column data extract from financial report
+var customData = {};
+// avoid duplicate load data
 var customDataLoadedColumn = [];
 
+// cunstom column name and formula to calcuate from custom data.
 var customColumnFormula = {
     营业收入: '营业收入',
     营业收入增长率 : '营业总收入同比增长率',
@@ -47,6 +30,23 @@ var customColumnFormula = {
     经营性现金流净额比净利润:'经营现金流量净额/净利润'
 };
 
+var formulas = {};
+
+(function(){
+    $.each(customColumnFormula, function (columnName) {
+        formulas[columnName] = formulaParse(customColumnFormula[columnName]);
+    });
+
+    $.each(formulas, function (columnName) {
+        $.each(this, function(i){
+            if(this.match(/[a-z\u4e00-\u9eff]{1,20}/)){
+                customData[this] = [];
+            }
+        })
+    });
+    console.log(customData);
+})();
+
 function createCustomReport(panel) {
     var table = $('<table class="table table-bordered">');
 
@@ -63,14 +63,13 @@ function createCustomReport(panel) {
         tRow = $('<tr>');
         tRow.append($('<td>').html(columnName));
         if(this.match(/[\+\-\*\/\(\)]/) != null) {
-            var formula = formulaParse(customColumnFormula[columnName]);
             var stack = [];
             var temp = [];
-            while (formula.length > 0) {
-                if(formula[0].match(/[\+\-\*\/]/)) {
-                    console.log(formula);
+            while (formulas[columnName].length > 0) {
+                if(formulas[columnName][0].match(/[\+\-\*\/]/)) {
+                    console.log(formulas[columnName]);
                     console.log(stack);
-                    var operator = formula.shift();
+                    var operator = formulas[columnName].shift();
                     var operand1 = stack.shift();
                     var operand2 = stack.shift();
                     var left = [], right = [];
@@ -79,12 +78,7 @@ function createCustomReport(panel) {
                     } else if(operand1.match(/^[\-\+]?\d+(\.\d+)?/)){
                         left = operand2;
                     } else {
-                        if(operand1.indexOf('上一年') != -1){
-                            left = customData[operand1.replace(/上一年/, '')];
-                            left = left.slice(1, left.length);
-                        } else {
-                            left = customData[operand1];
-                        }
+                        left = customData[operand1];
                     }
 
                     console.log(operand2);
@@ -93,12 +87,7 @@ function createCustomReport(panel) {
                     } else if(operand2.match(/^[\-\+]?\d+(\.\d+)?/)){
                         right = operand2;
                     } else {
-                        if(operand2.indexOf('上一年') != -1) {
-                            left = customData[operand1.replace(/上一年/, '')];
-                            left = left.slice(1, left.length);
-                        } else {
-                            right = customData[operand2];
-                        }
+                        right = customData[operand2];
                     }
 
                     if(left == undefined || right == undefined) {
@@ -128,7 +117,7 @@ function createCustomReport(panel) {
 
                     stack.unshift('temp');
                 } else {
-                    stack.unshift(formula.shift());
+                    stack.unshift(formulas[columnName].shift());
                 }
             }
 
@@ -228,12 +217,23 @@ function createReport(panel, stkcd, type, callBack) {
                                 });
                                 // custom data assign
                             } else if(customData.hasOwnProperty(columName) && customDataLoadedColumn.indexOf(columName) == -1) {
-                                $.each(this.json, function(data){
+                                $.each(this.json, function(i){
                                     customData[columName].push(this);
                                 });
 
                                 // avoid duplicate assign value
                                 customDataLoadedColumn.push(columName);
+
+                                if(customData.hasOwnProperty('上一年' + columName) && customDataLoadedColumn.indexOf('上一年' + columName) == -1) {
+                                    $.each(this.json, function(i){
+                                        if(i > 0) {
+                                            customData['上一年' + columName].push(this);
+                                        }
+                                    });
+
+                                    // avoid duplicate assign value
+                                    customDataLoadedColumn.push('上一年' + columName);
+                                }
                             }
                         }
 
@@ -244,6 +244,12 @@ function createReport(panel, stkcd, type, callBack) {
                                 // avoid duplicate assign value
                                 if(customData[columName][0] != this.json[0]) {
                                     customData[columName].unshift(this.json[0]);
+                                }
+
+                                if(customData.hasOwnProperty('上一年' + columName)) {
+                                    if(customData[columName][0] != this.json[4]) {
+                                        customData['上一年' + columName].unshift(this.json[4]);
+                                    }
                                 }
                             }
                         }
