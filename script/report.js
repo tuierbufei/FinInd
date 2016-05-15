@@ -13,22 +13,26 @@ var customColumnFormula = {
     营业收入: '营业收入',
     营业收入增长率 : '营业总收入同比增长率',
     毛利率 : '销售毛利率',
-    三项费用率 : '(管理费用+销售费用+财务费用)/营业收入',
-    销售费用率 : '销售费用/营业收入',
-    管理费用率 : '管理费用/营业收入',
-    财务费用率 : '财务费用/营业收入',
-    扣非净利润率: '扣非净利润/营业收入',
-    净利润增长率 : '(净利润-上一年净利润)/上一年净利润',
+    三项费用率 : '(管理费用+销售费用+财务费用)/营业收入*100',
+    销售费用率 : '销售费用/营业收入*100',
+    管理费用率 : '管理费用/营业收入*100',
+    财务费用率 : '财务费用/营业收入*100',
+    扣非净利润率: '扣非净利润/营业收入*100',
+    净利润增长率 : '(净利润-上一年净利润)/上一年净利润*100',
     资产负债率 : '资产负债比率',
     流动比率 : '流动比率',
     速动比率 : '速动比率',
     存货周转率 : '存货周转率',
     应收账款周转率 : '360/应收账款周转天数',
-    固定资产比重 : '固定资产/资产总计',
+    固定资产比重 : '固定资产/资产总计*100',
     净资产收益率ROE : '净资产收益率',
-    总资产收益率 : '净利润/资产总计',
-    经营性现金流净额比净利润:'经营现金流量净额/净利润'
+    总资产收益率 : '净利润/资产总计*100',
+    经营性现金流净额比净利润:'经营现金流量净额/净利润*100'
 };
+
+var customFormat = {
+
+}
 
 var formulas = {};
 
@@ -44,13 +48,15 @@ var formulas = {};
             }
         })
     });
-    console.log(customData);
 })();
 
 function createCustomReport(panel) {
     var table = $('<table class="table table-bordered">');
+    panel.append(table);
 
-    console.log(customData);
+    var chartContainer = $('<div>');
+    panel.append(chartContainer);
+
     var tRow = $('<tr>'),
         tCell;
     tRow.append($('<td>').html('科目\\时间'));
@@ -62,32 +68,32 @@ function createCustomReport(panel) {
     $.each(customColumnFormula, function(columnName){
         tRow = $('<tr>');
         tRow.append($('<td>').html(columnName));
+        var chartData = [];
         if(this.match(/[\+\-\*\/\(\)]/) != null) {
             var stack = [];
             var temp = [];
-            while (formulas[columnName].length > 0) {
-                if(formulas[columnName][0].match(/[\+\-\*\/]/)) {
-                    console.log(formulas[columnName]);
-                    console.log(stack);
-                    var operator = formulas[columnName].shift();
+            var formula = formulas[columnName].slice();
+            while (formula.length > 0) {
+                if(formula[0].match(/[\+\-\*\/]/)) {
+                    var operator = formula.shift();
+
                     var operand1 = stack.shift();
                     var operand2 = stack.shift();
                     var left = [], right = [];
-                    if(operand1 == 'temp') {
+                    if(operand2 == 'temp') {
                         left = temp;
-                    } else if(operand1.match(/^[\-\+]?\d+(\.\d+)?/)){
+                    } else if(operand2.match(/^[\-\+]?\d+(\.\d+)?/)){
                         left = operand2;
                     } else {
-                        left = customData[operand1];
+                        left = customData[operand2];
                     }
 
-                    console.log(operand2);
-                    if(operand2 == 'temp') {
+                    if(operand1 == 'temp') {
                         right = temp;
-                    } else if(operand2.match(/^[\-\+]?\d+(\.\d+)?/)){
-                        right = operand2;
+                    } else if(operand1.match(/^[\-\+]?\d+(\.\d+)?/)){
+                        right = operand1;
                     } else {
-                        right = customData[operand2];
+                        right = customData[operand1];
                     }
 
                     if(left == undefined || right == undefined) {
@@ -99,25 +105,29 @@ function createCustomReport(panel) {
                         len = Math.min(left.length, right.length);
 
                         for (var i = 0; i< len; i++) {
+                            if(columnName == '净利润增长率') {
+                                console.log(parseFloat(left[i]));
+                                console.log(parseFloat(right[i]));
+                            }
                             temp[i] = calcuate(operator, parseFloat(left[i]), parseFloat(right[i]));
                         }
                     } else if(left instanceof Array){
                         len = left.length;
 
                         for (var i = 0; i< len; i++) {
-                            temp[i] = calcuate(operator, left, parseFloat(right[i]));
+                            temp[i] = calcuate(operator, parseFloat(left[i]), right);
                         }
                     } else if(right instanceof Array) {
                         len = right.length;
 
                         for (var i = 0; i< len; i++) {
-                            temp[i] = calcuate(operator, parseFloat(left[i]), right);
+                            temp[i] = calcuate(operator, parseFloat(right[i]), left);
                         }
                     }
 
                     stack.unshift('temp');
                 } else {
-                    stack.unshift(formulas[columnName].shift());
+                    stack.unshift(formula.shift());
                 }
             }
 
@@ -125,24 +135,46 @@ function createCustomReport(panel) {
                 if(i > 10) {
                     return false;
                 }
-                tCell = $('<td>').html(this);
+                tCell = $('<td>').html(this.toFixed(2));
                 tRow.append(tCell);
+                chartData.push(this.toFixed(2));
             });
+
+            createChart(chartContainer, columnName, customDataYear, chartData);
         } else {
             $.each(customData[this], function(i){
                 if(i > 10) {
                     return false;
                 }
 
-                tCell = $('<td>').html(this);
+                tCell = $('<td>').html(parseFloat(this).toFixed(2));
                 tRow.append(tCell);
+                chartData.push(parseFloat(this).toFixed(2));
             });
+
+            createChart(chartContainer, columnName, customDataYear, chartData);
         }
 
         table.append(tRow);
     });
+}
 
-    panel.append(table);
+function createChart(container, columnName, customDataYear, customData) {
+    var ct = $('<canvas>');
+    container.append(ct);
+
+    var chart = new Chart(ct, {
+        type : 'bar',
+        data : {
+            labels : customDataYear,
+            datasets : [{
+                label : columnName,
+                data : customData
+            }]
+        }
+    });
+
+    return ct;
 }
 
 function calcuate(operator, operand1, operand2){
@@ -158,7 +190,7 @@ function calcuate(operator, operand1, operand2){
             break;
     }
 
-    return value.toFixed(2);
+    return value;
 }
 
 function createReport(panel, stkcd, type, callBack) {
@@ -247,7 +279,7 @@ function createReport(panel, stkcd, type, callBack) {
                                 }
 
                                 if(customData.hasOwnProperty('上一年' + columName)) {
-                                    if(customData[columName][0] != this.json[4]) {
+                                    if(customData['上一年' + columName][0] != this.json[4]) {
                                         customData['上一年' + columName].unshift(this.json[4]);
                                     }
                                 }
