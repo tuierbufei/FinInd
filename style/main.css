@@ -4,3 +4,18 @@
 .financial-table-container {
     width: 100%;
 }
+
+.fixed-column {
+    left:0;
+    width:100px;
+}
+
+.table-outer-container {
+    position:relative;
+}
+
+.table-inner-container {
+    overflow-x:scroll;
+    overflow-y:visible;
+    width:auto;
+}

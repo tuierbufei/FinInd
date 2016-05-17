@@ -57,23 +57,32 @@ var formulas = {};
 })();
 
 function createCustomReport(panel) {
-    var table = $('<table class="table table-bordered table-striped">');
-    panel.append(table);
-
+    var outer = $('<div class="table-outer-container"/>');
+    var inner = $('<div class="table-inner-container"/>');
+    var table = $('<table id="table" class="table table-bordered table-striped table-condensed table-hover">');
+    panel.append(outer);
+    outer.append(inner);
+    inner.append(table);
     var chartContainer = $('<div>');
     panel.append(chartContainer);
 
     var tRow = $('<tr>'),
         tCell;
-    tRow.append($('<th>').html('科目\\时间'));
+    tRow.append($('<th class="fixed-column">').html('科目\\时间'));
     $.each(customDataYear, function(i){
         tRow.append($('<th>').html(this));
     });
 
+ //   $(inner).scroll(function (e) {
+ //       if(e.target.scrollLeft > 0 && table.css('margin-left') == '0px'){
+
+//        }
+//    });
+
     table.append($('<thead>').append(tRow));
     $.each(customColumnFormula, function(columnName){
         tRow = $('<tr>');
-        tRow.append($('<th>').html(columnName));
+        tRow.append($('<th class="fixed-column">').html(columnName));
         var chartData = [];
         var dataUnit = customColumnFormula[columnName][1];
         if(this[0].match(/[\+\-\*\/\(\)]/) != null) {
@@ -177,7 +186,39 @@ function createCustomReport(panel) {
         }
 
         table.append(tRow);
+
+        var column = table.find('.fixed-column');
+        column.each(function(){
+            $(this).css('position', 'absolute');
+        });
+
+        table.css('margin-left', $(column[0]).outerWidth());
+
+        var tr = table.find("tr");
+        tr.each(function () {
+            var columns = $(this).children();
+
+            var column0 = $(columns[0]).children()[0] || columns[0];
+            var column1 = columns[1];
+
+            var height0 = (column0).offsetHeight;
+            var height1 = column1 ? column1.offsetHeight : 0;
+
+            var height = Math.max(height0, height1);
+
+            columns[0].style.height = height + "px";
+            this.style.height = height + "px";
+
+            if (column1) {
+                column1.style.height = height + "px";
+            }
+
+        });
     });
+
+    //table.bootstrapTable({
+    //    fixedColumns: true
+    //});
 }
 
 function createChart(container, columnName, customDataYear, customData) {
