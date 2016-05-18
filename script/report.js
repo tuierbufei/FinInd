@@ -174,7 +174,7 @@ function createCustomReport(panel) {
                 if(dataUnit == '%') {
                     tCell = $('<td>').html(parseFloat(this).toFixed(2) + '%');
                 } else if(dataUnit != '' && unit[dataUnit] != undefined) {
-                    tCell = $('<td>').html((parseFloat(this)/unit[dataUnit]).toFixed(2) + '' + unit[customColumnFormula[columnName][1]]);
+                    tCell = $('<td>').html((parseFloat(this)/unit[dataUnit]).toFixed(2) + '' + dataUnit);
                 } else {
                     tCell = $('<td>').html(parseFloat(this).toFixed(2));
                 }
