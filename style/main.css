@@ -11,7 +11,7 @@ body{
 
 .fixed-column {
     left:0;
-    width:65px;
+    width:75px;
     background: white;
     border-right: 0px !important;
 }
