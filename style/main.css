@@ -1,13 +1,23 @@
 /**
  * Created by cxh on 2016/4/25.
  */
+body{
+    font-size: 12px;
+}
 .financial-table-container {
     width: 100%;
+    font-size: 12px;
 }
 
 .fixed-column {
     left:0;
-    width:100px;
+    width:75px;
+    background: white;
+    border-right: 0px !important;
+}
+
+.table tbody tr:nth-child(odd) .fixed-column {
+    background-color: #f9f9f9;
 }
 
 .table-outer-container {
