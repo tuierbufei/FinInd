@@ -11,8 +11,8 @@ var customDataLoadedColumn = [];
 // cunstom column name and formula to calcuate from custom data.
 var unit = {
     万:0.01,
-    百万:1,
-    亿:100,
+    百万:100,
+    亿:10000,
 }
 
 var customColumnFormula = {
@@ -23,6 +23,7 @@ var customColumnFormula = {
     销售费用率 : ['销售费用/营业收入', '%'],
     管理费用率 : ['管理费用/营业收入', '%'],
     财务费用率 : ['财务费用/营业收入', '%'],
+    扣非净利润 : ['扣非净利润', '亿'],
     扣非净利润率: ['扣非净利润/营业收入', '%'],
     净利润增长率 : ['(净利润-上一年净利润)/上一年净利润', '%'],
     资产负债率 : ['资产负债比率', '%'],
@@ -36,6 +37,15 @@ var customColumnFormula = {
     经营性现金流净额比净利润:['经营现金流量净额/净利润', '']
 };
 
+var chartGroup = [{营业收入:'bar', 营业收入增长率:'line', 扣非净利润:'bar', 净利润增长率:'line'},
+    {毛利率 : 'line', 扣非净利润率:'line'},
+    {三项费用率:'line',销售费用率:'line',管理费用率:'line',财务费用率:'line'},
+    {资产负债率:'line', 流动比率:'line', 速动比率:'line', 固定资产比重:'line'},
+    {净资产收益率ROE:'line', 资产负债率:'line', 扣非净利润率:'line', 总资产收益率:'line'},
+    {存货周转率:'line', 应收账款周转率:'line'}];
+
+var chartData = {};
+
 var customFormat = {
 
 }
@@ -45,18 +55,21 @@ var formulas = {};
 (function(){
     $.each(customColumnFormula, function (columnName) {
         formulas[columnName] = formulaParse(customColumnFormula[columnName][0]);
+        chartData[columnName] = [];
     });
 
     $.each(formulas, function (columnName) {
         $.each(this, function(i){
             if(this.match(/[a-z\u4e00-\u9eff]{1,20}/)){
                 customData[this] = [];
+
             }
         })
     });
 })();
 
 function createCustomReport(panel) {
+    console.log(customData);
     var outer = $('<div class="table-outer-container"/>');
     var inner = $('<div class="table-inner-container"/>');
     var table = $('<table id="table" class="table table-bordered table-striped table-condensed table-hover">');
@@ -73,18 +86,11 @@ function createCustomReport(panel) {
         tRow.append($('<th>').html(this));
     });
 
- //   $(inner).scroll(function (e) {
- //       if(e.target.scrollLeft > 0 && table.css('margin-left') == '0px'){
-
-//        }
-//    });
-
     table.append($('<thead>').append(tRow));
     $.each(customColumnFormula, function(columnName){
         tRow = $('<tr>');
-        tRow.append($('<th class="fixed-column">').html(columnName));
-        var chartData = [];
         var dataUnit = customColumnFormula[columnName][1];
+        tRow.append($('<th class="fixed-column">').html(unit[dataUnit] == undefined ? columnName : columnName + '(' + unit[dataUnit] + ')'));
         if(this[0].match(/[\+\-\*\/\(\)]/) != null) {
             var stack = [];
             var temp = [];
@@ -121,10 +127,6 @@ function createCustomReport(panel) {
                         len = Math.min(left.length, right.length);
 
                         for (var i = 0; i< len; i++) {
-                            if(columnName == '净利润增长率') {
-                                console.log(parseFloat(left[i]));
-                                console.log(parseFloat(right[i]));
-                            }
                             temp[i] = calcuate(operator, parseFloat(left[i]), parseFloat(right[i]));
                         }
                     } else if(left instanceof Array){
@@ -137,7 +139,7 @@ function createCustomReport(panel) {
                         len = right.length;
 
                         for (var i = 0; i< len; i++) {
-                            temp[i] = calcuate(operator, parseFloat(right[i]), left);
+                            temp[i] = calcuate(operator, left, parseFloat(right[i]));
                         }
                     }
 
@@ -155,13 +157,13 @@ function createCustomReport(panel) {
                 if(dataUnit == '%') {
                     tCell = $('<td>').html((this * 100).toFixed(2) + '%');
                 }else if(dataUnit != '' && unit[dataUnit] != undefined) {
-                    tCell = $('<td>').html((this/unit[dataUnit]).toFixed(2) + '' + dataUnit);
+                    tCell = $('<td>').html((this/unit[dataUnit]).toFixed(2));
                 } else {
                     tCell = $('<td>').html(this.toFixed(2));
                 }
 
                 tRow.append(tCell);
-                chartData.push(this.toFixed(2));
+                chartData[columnName].push(this.toFixed(2));
             });
 
             createChart(chartContainer, columnName, customDataYear, chartData);
@@ -174,15 +176,13 @@ function createCustomReport(panel) {
                 if(dataUnit == '%') {
                     tCell = $('<td>').html(parseFloat(this).toFixed(2) + '%');
                 } else if(dataUnit != '' && unit[dataUnit] != undefined) {
-                    tCell = $('<td>').html((parseFloat(this)/unit[dataUnit]).toFixed(2) + '' + dataUnit);
+                    tCell = $('<td>').html((parseFloat(this)/unit[dataUnit]).toFixed(2));
                 } else {
                     tCell = $('<td>').html(parseFloat(this).toFixed(2));
                 }
                 tRow.append(tCell);
-                chartData.push(parseFloat(this).toFixed(2));
+                chartData[columnName].push(parseFloat(this).toFixed(2));
             });
-
-            createChart(chartContainer, columnName, customDataYear, chartData);
         }
 
         table.append(tRow);
@@ -216,27 +216,36 @@ function createCustomReport(panel) {
         });
     });
 
-    //table.bootstrapTable({
-    //    fixedColumns: true
-    //});
+    createChart(chartContainer);
 }
 
-function createChart(container, columnName, customDataYear, customData) {
-    var ct = $('<canvas>');
-    container.append(ct);
+function createChart(container) {
+    $.each(chartGroup, function(i) {
+        var datasets = [];
+        $.each(this, function(columnName){
+            var dataset = {
+                label : unit[customColumnFormula[columnName][1]] == undefined ? columnName : columnName + '(' + unit[customColumnFormula[columnName][1]] + ')',
+                data : chartData[columnName]
+            };
+            datasets.push(dataset);
+        });
 
-    var chart = new Chart(ct, {
-        type : 'line',
+        var ct = $('<canvas>');
+        container.append(ct);
+        renderChart(ct, 'line', datasets);
+    });
+}
+
+function renderChart(container, type, datasets){
+    var chart = new Chart(container, {
+        type : type,
         data : {
             labels : customDataYear,
-            datasets : [{
-                label : columnName,
-                data : customData
-            }]
+            datasets : datasets,
         }
     });
 
-    return ct;
+    return chart;
 }
 
 function calcuate(operator, operand1, operand2){
