@@ -37,14 +37,17 @@ var customColumnFormula = {
     经营性现金流净额比净利润:['经营现金流量净额/净利润', '']
 };
 
-var chartGroup = [{营业收入:'bar', 营业收入增长率:'line', 扣非净利润:'bar', 净利润增长率:'line'},
-    {毛利率 : 'line', 扣非净利润率:'line'},
-    {三项费用率:'line',销售费用率:'line',管理费用率:'line',财务费用率:'line'},
-    {资产负债率:'line', 流动比率:'line', 速动比率:'line', 固定资产比重:'line'},
-    {净资产收益率ROE:'line', 资产负债率:'line', 扣非净利润率:'line', 总资产收益率:'line'},
-    {存货周转率:'line', 应收账款周转率:'line'}];
+var chartGroup = [{column:{营业收入:'bar',营业收入增长率:'line',扣非净利润:'bar',净利润增长率:'line'}, option:{multiAxis:['营业收入增长率','净利润增长率']}},
+    {column:{毛利率:'line',扣非净利润率:'line'}},
+    {column:{三项费用率:'line',销售费用率:'bar',管理费用率:'bar',财务费用率:'bar'},option:{stack:true}},
+    {column:{资产负债率:'line',流动比率:'line',速动比率:'line', 固定资产比重:'line'},multiAxis:['流动比率','速动比率']},
+    {column:{资产负债率:'line', 流动比率:'line', 速动比率:'line', 固定资产比重:'line'}},
+    {column:{净资产收益率ROE:'line', 资产负债率:'line', 扣非净利润率:'line', 总资产收益率:'line'}},
+    {column:{存货周转率:'line', 应收账款周转率:'line'}}];
 
 var chartData = {};
+
+var chartColor = ['rgba(91,144,191,1)','rgba(191,97,106,1)','rgba(217,99,59,1)','rgba(94,161,128,1)','rgba(236,173,50,1)','rgba(255,51,51,1)','rgba(77,182,224,1)','rgba(254,135,134,1)'];
 
 var customFormat = {
 
@@ -165,8 +168,6 @@ function createCustomReport(panel) {
                 tRow.append(tCell);
                 chartData[columnName].push(this.toFixed(2));
             });
-
-            createChart(chartContainer, columnName, customDataYear, chartData);
         } else {
             $.each(customData[this[0]], function(i){
                 if(i > 10) {
@@ -222,26 +223,50 @@ function createCustomReport(panel) {
 function createChart(container) {
     $.each(chartGroup, function(i) {
         var datasets = [];
-        $.each(this, function(columnName){
+        var count = 0;
+        $.each(this[column], function(columnName, type){
             var dataset = {
+                type : type,
                 label : unit[customColumnFormula[columnName][1]] == undefined ? columnName : columnName + '(' + unit[customColumnFormula[columnName][1]] + ')',
-                data : chartData[columnName]
+                data : chartData[columnName],
+                backgroundColor : count < chartColor.length ? chartColor[count] : 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)'
             };
+            count++;
             datasets.push(dataset);
         });
 
         var ct = $('<canvas>');
         container.append(ct);
-        renderChart(ct, 'line', datasets);
+        renderChart(ct, datasets);
     });
 }
 
-function renderChart(container, type, datasets){
+function randomColorFactor() {
+    return Math.round(Math.random() * 255);
+};
+
+function renderChart(container, datasets){
     var chart = new Chart(container, {
-        type : type,
+        type : 'bar',
         data : {
             labels : customDataYear,
             datasets : datasets,
+        },
+        options: {
+            animation: {
+                onComplete: function () {
+                    var chartInstance = this.chart;
+                    var ctx = chartInstance.ctx;
+                    ctx.textAlign = "center";
+
+                    Chart.helpers.each(this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        Chart.helpers.each(meta.data.forEach(function (bar, index) {
+                            ctx.fillText(dataset.data[index], bar._model.x, bar._model.y - 10);
+                        }),this)
+                    }),this);
+                }
+            }
         }
     });
 
