@@ -2,14 +2,14 @@
  * Created by ThinkPad on 2016/5/22.
  */
 function createStockInfo(panel, market, stkcd, attempt) {
-    var token = 'b447929763f9d4b4283aeb8913865368b17060fa';
+    var token = '934f674c5167ef0a40bc92c387554e5b8d74a6f8';
     $.getJSON("http://query.yahooapis.com/v1/public/yql", {
         q: 'select * from json where url=\"http://xueqiu.com/v4/stock/quote.json?code=' + market + stkcd + '&_=' + Date.parse(new Date()) + '&access_token=' + token + '\"',
         format: "json"
     }, function (data) {
         if((data.query.count == 0 || data.query.count == '0') && attempt > 0) {
             attempt --;
-            createReport(panel, market, stkcd, attempt);
+            createStockInfo(panel, market, stkcd, attempt);
 
             return;
         }
