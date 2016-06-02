@@ -82,6 +82,8 @@ window.onload = function () {
         }
     });
 
+    $('')
+
     function queryByYQL(query, cb, attempt) {
         $.getJSON("http://query.yahooapis.com/v1/public/yql", {
             q: 'select * from html where url=\"http://smartbox.gtimg.cn/s3/?v=2&q=' + $('#stkcdInput').val() + '&t=gp\" and xpath=\"//*/text()\"',

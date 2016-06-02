@@ -4,7 +4,7 @@
 <head>
     <title>公司价值分析</title>
 
-    <link href="assert/css/light7.css" rel="stylesheet" type="text/css" />
+    <link href="assert/css/light7.min.css" rel="stylesheet" type="text/css" />
     <link href="assert/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 
     <script src="assert/js/jquery-1.9.1.js" type="text/javascript"></script>
@@ -17,13 +17,16 @@
     <script src="assert/js/light7.js" type="text/javascript"></script>
 
     <!--<script src="http://rawgit.com/douglascrockford/JSON-js/master/json2.js" type="text/javascript"></script>-->
-    <script src="script/createStockChart.js" type="text/javascript"></script>
-    <script src="script/formulaParse.js" type="text/javascript"></script>
-    <script src="script/createStockInfo.js" type="text/javascript"></script>
-    <script src="script/createChart.js" type="text/javascript"></script>
-    <script src="script/createCustomReport.js" type="text/javascript"></script>
-    <script src="script/report.js" type="text/javascript"></script>
-    <script src="script/main.js" type="text/javascript"></script>
+    <script src="script/company/createStockChart.js" type="text/javascript"></script>
+    <script src="script/company/formulaParse.js" type="text/javascript"></script>
+    <script src="script/company/createStockInfo.js" type="text/javascript"></script>
+    <script src="script/company/createChart.js" type="text/javascript"></script>
+    <script src="script/company/createCustomReport.js" type="text/javascript"></script>
+    <script src="script/company/report.js" type="text/javascript"></script>
+    <script src="script/company/company.js" type="text/javascript"></script>
+    <script src="script/industry/industry.js" type="text/javascript"></script>
+
+    <script src="script/app.js" type="text/javascript"></script>
     <!-- createChart ==>createCustomReport =>report =>main -->
 
     <link href="style/main.css" rel="stylesheet" type="text/css" />
@@ -36,14 +39,14 @@
     <div class="page">
         <nav class="bar bar-tab">
             <a id="companyNav" class="tab-item" href="#">
-                <img style="width:30px;height:30px" id="companyNavIcon" data-swap="style/Img/company_select.svg" src="style/Img/company.svg" onclick="onClick(this)" onmouseover="hover(this);" onmouseout="unhover(this);"/>
+                <img style="width:30px;height:30px" id="companyNavIcon"/>
                 <div class="tab-label">公司</div>
             </a>
             <a id="industryNav" class="tab-item" href="#">
                 <img style="width:30px;height:30px" id="industryNavIcon" src="style/Img/industry.svg"/>
                 <div class="tab-label">行业</div>
             </a>
-            <a class="tab-item" href="#">
+            <a id="Nav" class="tab-item" href="#">
                 <span class="icon icon-settings"></span>
                 <span class="tab-label">设置</span>
             </a>
