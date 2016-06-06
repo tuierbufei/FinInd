@@ -167,9 +167,9 @@ Device/OS Detection
 
 }($);
 
-//     Zepto.js
+//     Zepto.lib
 //     (c) 2010-2015 Thomas Fuchs
-//     Zepto.js may be freely distributed under the MIT license.
+//     Zepto.lib may be freely distributed under the MIT license.
 + function($) {
   "use strict";
     function detect(ua, platform) {
@@ -2543,7 +2543,7 @@ Device/OS Detection
 
     $(function() {
       $(document).on('click', ' .modal-overlay, .popup-overlay, .close-popup, .open-popup, .open-popover, .close-popover, .close-picker', handleClicks);
-      defaults.modalContainer = defaults.modalContainer || document.body;  //incase some one include js in head
+      defaults.modalContainer = defaults.modalContainer || document.body;  //incase some one include lib in head
     });
 }($);
 

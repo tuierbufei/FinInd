@@ -5,7 +5,7 @@
  * jQuery JavaScript Library v1.9.1
  * http://jquery.com/
  *
- * Includes Sizzle.js
+ * Includes Sizzle.lib
  * http://sizzlejs.com/
  *
  * Copyright 2005, 2012 jQuery Foundation, Inc. and other contributors
@@ -441,7 +441,7 @@
             }
         },
 
-        // See test/unit/core.js for details concerning isFunction.
+        // See test/unit/core.lib for details concerning isFunction.
         // Since version 1.3, DOM methods and functions like alert
         // aren't supported. They return false on IE (#2968).
         isFunction: function( obj ) {
@@ -594,7 +594,7 @@
 
         noop: function() {},
 
-        // Evaluates a script in a global context
+        // Evaluates a app in a global context
         // Workarounds based on findings by Jim Driscoll
         // http://weblogs.java.net/blog/driscoll/archive/2009/09/08/eval-javascript-global-context
         globalEval: function( data ) {
@@ -1494,7 +1494,7 @@
             support.boxSizing = ( div.offsetWidth === 4 );
             support.doesNotIncludeMarginInBodyOffset = ( body.offsetTop !== 1 );
 
-            // Use window.getComputedStyle because jsdom on node.js will break without it.
+            // Use window.getComputedStyle because jsdom on node.lib will break without it.
             if ( window.getComputedStyle ) {
                 support.pixelPosition = ( window.getComputedStyle( div, null ) || {} ).top !== "1%";
                 support.boxSizingReliable = ( window.getComputedStyle( div, null ) || { width: "4px" } ).width === "4px";
@@ -5863,7 +5863,7 @@
             col: [ 2, "<table><tbody></tbody><colgroup>", "</colgroup></table>" ],
             td: [ 3, "<table><tbody><tr>", "</tr></tbody></table>" ],
 
-            // IE6-8 can't serialize link, script, style, or any html5 (NoScope) tags,
+            // IE6-8 can't serialize link, app, style, or any html5 (NoScope) tags,
             // unless wrapped in a div with non-breaking characters in front of it.
             _default: jQuery.support.htmlSerialize ? [ 0, "", "" ] : [ 1, "X<div>", "</div>"  ]
         },
@@ -6206,7 +6206,7 @@
         return elem.getElementsByTagName( tag )[0] || elem.appendChild( elem.ownerDocument.createElement( tag ) );
     }
 
-// Replace/restore the type attribute of script elements for safe DOM manipulation
+// Replace/restore the type attribute of app elements for safe DOM manipulation
     function disableScript( elem ) {
         var attr = elem.getAttributeNode("type");
         elem.type = ( attr && attr.specified ) + "/" + elem.type;
@@ -6425,7 +6425,7 @@
                 }
             }
 
-            // Preserve script evaluation history
+            // Preserve app evaluation history
             destElements = getAll( clone, "script" );
             if ( destElements.length > 0 ) {
                 setGlobalEval( destElements, !inPage && getAll( elem, "script" ) );
@@ -6543,7 +6543,7 @@
                 // Append to fragment
                 tmp = getAll( safe.appendChild( elem ), "script" );
 
-                // Preserve script evaluation history
+                // Preserve app evaluation history
                 if ( contains ) {
                     setGlobalEval( tmp );
                 }
@@ -6923,7 +6923,7 @@
     });
 
 // NOTE: we've included the "window" in window.getComputedStyle
-// because jsdom on node.js will break without it.
+// because jsdom on node.lib will break without it.
     if ( window.getComputedStyle ) {
         getStyles = function( elem ) {
             return window.getComputedStyle( elem, null );
@@ -7430,7 +7430,7 @@
         _load = jQuery.fn.load,
 
     /* Prefilters
-     * 1) They are useful to introduce custom dataTypes (see ajax/jsonp.js for an example)
+     * 1) They are useful to introduce custom dataTypes (see ajax/jsonp.lib for an example)
      * 2) These are called:
      *    - BEFORE asking for a transport
      *    - AFTER param serialization (s.data is a string if s.processData is true)
@@ -8261,7 +8261,7 @@
 
         return { state: "success", data: response };
     }
-// Install script dataType
+// Install app dataType
     jQuery.ajaxSetup({
         accepts: {
             script: "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
@@ -8288,7 +8288,7 @@
         }
     });
 
-// Bind script tag hack transport
+// Bind app tag hack transport
     jQuery.ajaxTransport( "script", function(s) {
 
         // This transport only deals with cross domain requests
@@ -8319,12 +8319,12 @@
                             // Handle memory leak in IE
                             script.onload = script.onreadystatechange = null;
 
-                            // Remove the script
+                            // Remove the app
                             if ( script.parentNode ) {
                                 script.parentNode.removeChild( script );
                             }
 
-                            // Dereference the script
+                            // Dereference the app
                             script = null;
 
                             // Callback if not abort
@@ -8384,7 +8384,7 @@
                 s.url += ( ajax_rquery.test( s.url ) ? "&" : "?" ) + s.jsonp + "=" + callbackName;
             }
 
-            // Use data converter to retrieve json after script execution
+            // Use data converter to retrieve json after app execution
             s.converters["script json"] = function() {
                 if ( !responseContainer ) {
                     jQuery.error( callbackName + " was not called" );
@@ -8423,7 +8423,7 @@
                 responseContainer = overwritten = undefined;
             });
 
-            // Delegate to script
+            // Delegate to app
             return "script";
         }
     });
@@ -9587,7 +9587,7 @@
 // they have special allowances for multiple jQuery versions by
 // specifying define.amd.jQuery = true. Register as a named module,
 // since jQuery can be concatenated with other files that may use define,
-// but not use a proper concatenation script that understands anonymous
+// but not use a proper concatenation app that understands anonymous
 // AMD modules. A named AMD is safest and most robust way to register.
 // Lowercase jquery is used because AMD module names are derived from
 // file names, and jQuery is normally delivered in a lowercase file name.

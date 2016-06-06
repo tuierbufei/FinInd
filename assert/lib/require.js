@@ -278,9 +278,9 @@ var requirejs, require, define;
                 name = name.split('/');
                 lastIndex = name.length - 1;
 
-                // If wanting node ID compatibility, strip .js from end
+                // If wanting node ID compatibility, strip .lib from end
                 // of IDs. Have to do this here, and not in nameToUrl
-                // because node allows either .js or non .js to map
+                // because node allows either .lib or non .lib to map
                 // to same file.
                 if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
                     name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
@@ -291,7 +291,7 @@ var requirejs, require, define;
                     //Convert baseName to array, and lop off the last part,
                     //so that . matches that 'directory' and not name of the baseName's
                     //module. For instance, baseName of 'one/two/three', maps to
-                    //'one/two/three.js', but we want the directory, 'one/two' for
+                    //'one/two/three.lib', but we want the directory, 'one/two' for
                     //this normalization.
                     normalizedBaseParts = baseParts.slice(0, baseParts.length - 1);
                     name = normalizedBaseParts.concat(name);
@@ -1045,7 +1045,7 @@ var requirejs, require, define;
                             text = textAlt;
                         }
 
-                        //Turn off interactive script matching for IE for any define
+                        //Turn off interactive app matching for IE for any define
                         //calls in the text, then turn it back on at the end.
                         if (hasInteractive) {
                             useInteractive = false;
@@ -1217,7 +1217,7 @@ var requirejs, require, define;
         }
 
         /**
-         * Given an event from a script node, get the requirejs info from it,
+         * Given an event from a app node, get the requirejs info from it,
          * and then removes the event listeners on the node.
          * @param {Event} evt
          * @returns {Object}
@@ -1356,7 +1356,7 @@ var requirejs, require, define;
 
                         //Save pointer to main module ID for pkg name.
                         //Remove leading dot in main, so main paths are normalized,
-                        //and remove any trailing .js, since different package
+                        //and remove any trailing .lib, since different package
                         //envs have different conventions: some use a module name,
                         //some use a file name.
                         config.pkgs[name] = pkgObj.name + '/' + (pkgObj.main || 'main')
@@ -1379,7 +1379,7 @@ var requirejs, require, define;
 
                 //If a deps array or a config callback is specified, then call
                 //require with those args. This is useful when require is defined as a
-                //config object before require.js is loaded.
+                //config object before require.lib is loaded.
                 if (cfg.deps || cfg.callback) {
                     context.require(cfg.deps || [], cfg.callback);
                 }
@@ -1557,7 +1557,7 @@ var requirejs, require, define;
 
             /**
              * Internal method used by environment adapters to complete a load event.
-             * A load event could be a script load or just a load pass from a synchronous
+             * A load event could be a app load or just a load pass from a synchronous
              * load call.
              * @param {String} moduleName the name of the module to potentially complete.
              */
@@ -1580,7 +1580,7 @@ var requirejs, require, define;
                         }
                         found = true;
                     } else if (args[0] === moduleName) {
-                        //Found matching define call for this script!
+                        //Found matching define call for this app!
                         found = true;
                     }
 
@@ -1603,7 +1603,7 @@ var requirejs, require, define;
                                              [moduleName]));
                         }
                     } else {
-                        //A script that does not call define(), so just simulate
+                        //A app that does not call define(), so just simulate
                         //the call for it.
                         callGetModule([moduleName, (shim.deps || []), shim.exportsFn]);
                     }
@@ -1636,11 +1636,11 @@ var requirejs, require, define;
 
                 //If a colon is in the URL, it indicates a protocol is used and it is just
                 //an URL to a file, or if it starts with a slash, contains a query arg (i.e. ?)
-                //or ends with .js, then assume the user meant to use an url and not a module id.
+                //or ends with .lib, then assume the user meant to use an url and not a module id.
                 //The slash is important for protocol-less URLs as well as full paths.
                 if (req.jsExtRegExp.test(moduleName)) {
                     //Just a plain path, not module name lookup, so just return it.
-                    //Add extension if it is included. This is a bit wonky, only non-.js things pass
+                    //Add extension if it is included. This is a bit wonky, only non-.lib things pass
                     //an extension, this method probably needs to be reworked.
                     url = moduleName + (ext || '');
                 } else {
@@ -1694,9 +1694,9 @@ var requirejs, require, define;
             },
 
             /**
-             * callback for script loads, used to check status of loading.
+             * callback for app loads, used to check status of loading.
              *
-             * @param {Event} evt the event from the browser for the script
+             * @param {Event} evt the event from the browser for the app
              * that was loaded.
              */
             onScriptLoad: function (evt) {
@@ -1705,7 +1705,7 @@ var requirejs, require, define;
                 //to support and still makes sense.
                 if (evt.type === 'load' ||
                         (readyRegExp.test((evt.currentTarget || evt.srcElement).readyState))) {
-                    //Reset interactive script so a script node is not held onto for
+                    //Reset interactive app so a app node is not held onto for
                     //to long.
                     interactiveScript = null;
 
@@ -1716,7 +1716,7 @@ var requirejs, require, define;
             },
 
             /**
-             * Callback for script errors.
+             * Callback for app errors.
              */
             onScriptError: function (evt) {
                 var data = getScriptData(evt);
@@ -1871,7 +1871,7 @@ var requirejs, require, define;
      */
     req.createNode = function (config, moduleName, url) {
         var node = config.xhtml ?
-                document.createElementNS('http://www.w3.org/1999/xhtml', 'html:script') :
+                document.createElementNS('http://www.w3.org/1999/xhtml', 'html:app') :
                 document.createElement('script');
         node.type = config.scriptType || 'text/javascript';
         node.charset = 'utf-8';
@@ -1892,22 +1892,22 @@ var requirejs, require, define;
         var config = (context && context.config) || {},
             node;
         if (isBrowser) {
-            //In the browser so use a script tag
+            //In the browser so use a app tag
             node = req.createNode(config, moduleName, url);
 
             node.setAttribute('data-requirecontext', context.contextName);
             node.setAttribute('data-requiremodule', moduleName);
 
             //Set up load listener. Test attachEvent first because IE9 has
-            //a subtle issue in its addEventListener and script onload firings
+            //a subtle issue in its addEventListener and app onload firings
             //that do not match the behavior of all other browsers with
             //addEventListener support, which fire the onload event for a
-            //script right after the script execution. See:
+            //app right after the app execution. See:
             //https://connect.microsoft.com/IE/feedback/details/648057/script-onload-event-is-not-fired-immediately-after-script-execution
-            //UNFORTUNATELY Opera implements attachEvent but does not follow the script
-            //script execution mode.
+            //UNFORTUNATELY Opera implements attachEvent but does not follow the app
+            //app execution mode.
             if (node.attachEvent &&
-                    //Check if node.attachEvent is artificially added by custom script or
+                    //Check if node.attachEvent is artificially added by custom app or
                     //natively supported by browser
                     //read https://github.com/requirejs/requirejs/issues/187
                     //if we can NOT find [native code] then it must NOT natively supported.
@@ -1917,9 +1917,9 @@ var requirejs, require, define;
                     !(node.attachEvent.toString && node.attachEvent.toString().indexOf('[native code') < 0) &&
                     !isOpera) {
                 //Probably IE. IE (at least 6-8) do not fire
-                //script onload right after executing the script, so
+                //app onload right after executing the app, so
                 //we cannot tie the anonymous define call to a name.
-                //However, IE reports the script as being in 'interactive'
+                //However, IE reports the app as being in 'interactive'
                 //readyState at the time of the define call.
                 useInteractive = true;
 
@@ -1929,9 +1929,9 @@ var requirejs, require, define;
                 //the error handler, so that does not help. If addEventListener
                 //is used, then IE will fire error before load, but we cannot
                 //use that pathway given the connect.microsoft.com issue
-                //mentioned above about not doing the 'script execute,
-                //then fire the script load event listener before execute
-                //next script' that other browsers do.
+                //mentioned above about not doing the 'app execute,
+                //then fire the app load event listener before execute
+                //next app' that other browsers do.
                 //Best hope: IE10 fixes the issues,
                 //and then destroys all installs of IE 6-9.
                 //node.attachEvent('onerror', context.onScriptError);
@@ -1947,7 +1947,7 @@ var requirejs, require, define;
                 config.onNodeCreated(node, config, moduleName, url);
             }
 
-            //For some cache cases in IE 6-8, the script executes before the end
+            //For some cache cases in IE 6-8, the app executes before the end
             //of the appendChild execution, so to tie an anonymous define
             //call to the module name (which is stored on the node), hold on
             //to a reference to this node, but clear after the DOM insertion.
@@ -1964,9 +1964,9 @@ var requirejs, require, define;
             try {
                 //In a web worker, use importScripts. This is not a very
                 //efficient use of importScripts, importScripts will block until
-                //its script is downloaded and evaluated. However, if web workers
+                //its app is downloaded and evaluated. However, if web workers
                 //are in play, the expectation is that a build has been done so
-                //that only one script needs to be loaded anyway. This may need
+                //that only one app needs to be loaded anyway. This may need
                 //to be reevaluated if other use cases become common.
 
                 // Post a task to the event loop to work around a bug in WebKit
@@ -2000,17 +2000,17 @@ var requirejs, require, define;
         return interactiveScript;
     }
 
-    //Look for a data-main script attribute, which could also adjust the baseUrl.
+    //Look for a data-main app attribute, which could also adjust the baseUrl.
     if (isBrowser && !cfg.skipDataMain) {
-        //Figure out baseUrl. Get it from the script tag with require.js in it.
+        //Figure out baseUrl. Get it from the app tag with require.lib in it.
         eachReverse(scripts(), function (script) {
             //Set the 'head' where we can append children by
-            //using the script's parent.
+            //using the app's parent.
             if (!head) {
                 head = script.parentNode;
             }
 
-            //Look for a data-main attribute to set main script for the page
+            //Look for a data-main attribute to set main app for the page
             //to load. If it is there, the path to data main becomes the
             //baseUrl, if it is not already set.
             dataMain = script.getAttribute('data-main');
@@ -2031,7 +2031,7 @@ var requirejs, require, define;
                     cfg.baseUrl = subPath;
                 }
 
-                //Strip off any trailing .js since mainScript is now
+                //Strip off any trailing .lib since mainScript is now
                 //like a module name.
                 mainScript = mainScript.replace(jsSuffixRegExp, '');
 
@@ -2040,7 +2040,7 @@ var requirejs, require, define;
                     mainScript = dataMain;
                 }
 
-                //Put the data-main script in the files to load.
+                //Put the data-main app in the files to load.
                 cfg.deps = cfg.deps ? cfg.deps.concat(mainScript) : [mainScript];
 
                 return true;
@@ -2108,10 +2108,10 @@ var requirejs, require, define;
             }
         }
 
-        //Always save off evaluating the def call until the script onload handler.
+        //Always save off evaluating the def call until the app onload handler.
         //This allows multiple modules to be in a file without prematurely
         //tracing dependencies, and allows for anonymous module support,
-        //where the module name is not known until the script onload event
+        //where the module name is not known until the app onload event
         //occurs. If no context, use the global queue, and get it processed
         //in the onscript load callback.
         if (context) {
