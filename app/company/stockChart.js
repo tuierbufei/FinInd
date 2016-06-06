@@ -5,12 +5,12 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
     var red = '#DD2200';
     var green = '#33AA11';
     var groupingUnits = [
-    ['hour', [1]],
-    ['day', [1]],
-    ['week', [1]],
-    ['month', [1]],
-    ['year', null]
-];
+        ['hour', [1]],
+        ['day', [1]],
+        ['week', [1]],
+        ['month', [1]],
+        ['year', null]
+    ];
     var dataMinTime = 0;
     var relativeWidth = 0;
     var showTips = function (minTime, maxTime, chart) {
@@ -186,15 +186,15 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                     type: 'day',
                     count: defaultDayCount,
                     text: '日K'
-            }, {
+                }, {
                     type: 'week',
                     count: defaultWeekCount,
                     text: '周k'
-            }, {
+                }, {
                     type: 'month',
                     count: defaultMonthCount,
                     text: '月k'
-            }],
+                }],
                 buttonTheme: {
                     width: 72,
                     height: 32,
@@ -318,7 +318,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                 crosshair: {
                     snap: true
                 }
-        }, {
+            }, {
                 labels: {
                     align: 'right',
                     x: -3
@@ -330,7 +330,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                 height: '25%',
                 offset: 0,
                 lineWidth: 2
-        }],
+            }],
 
             series: [{
                 type: 'candlestick',
@@ -343,7 +343,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                     units: groupingUnits
                 },
                 groupPixelWidth: 100
-        }, {
+            }, {
                 type: 'column',
                 name: '成交量',
                 data: [],
@@ -355,7 +355,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                     units: groupingUnits
                 },
                 groupPixelWidth: 100
-        }, {
+            }, {
                 type: 'spline',
                 name: 'MA5',
                 color: '#1aadce',
@@ -368,7 +368,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                     units: groupingUnits
                 },
                 groupPixelWidth: 100
-        }, {
+            }, {
                 type: 'spline',
                 name: 'MA10',
                 data: [],
@@ -381,7 +381,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                     units: groupingUnits
                 },
                 groupPixelWidth: 100
-        }, {
+            }, {
                 type: 'spline',
                 name: 'MA30',
                 data: [],
@@ -394,10 +394,10 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                     units: groupingUnits
                 },
                 groupPixelWidth: 100
-        }]
+            }]
         });
     });
-    
+
     function initData(data, ohlc, volume, MA5Array, MA10Array, MA30Array) {
         // split the data set into ohlc and volume
         var dataLength = data.length,
@@ -406,32 +406,32 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
 
         for (i; i < dataLength; i += 1) {
             ohlc.push([
-            Date.parse(data[i].day), // the date
-            parseFloat(data[i].open), // open
-            parseFloat(data[i].high), // high
-            parseFloat(data[i].low), // low
-            parseFloat(data[i].close) // close
-        ]);
+                Date.parse(data[i].day), // the date
+                parseFloat(data[i].open), // open
+                parseFloat(data[i].high), // high
+                parseFloat(data[i].low), // low
+                parseFloat(data[i].close) // close
+            ]);
 
             volume.push([
-            Date.parse(data[i].day), // the date
-            parseFloat(data[i].volume), // the volume
-        ]);
+                Date.parse(data[i].day), // the date
+                parseFloat(data[i].volume), // the volume
+            ]);
 
             MA5Array.push([
-            Date.parse(data[i].day), // the date
-            parseFloat(data[i].ma_price5)
-        ]);
+                Date.parse(data[i].day), // the date
+                parseFloat(data[i].ma_price5)
+            ]);
 
             MA10Array.push([
-            Date.parse(data[i].day),
-            parseFloat(data[i].ma_price10)
-        ]);
+                Date.parse(data[i].day),
+                parseFloat(data[i].ma_price10)
+            ]);
 
             MA30Array.push([
-            Date.parse(data[i].day),
-            parseFloat(data[i].ma_price30)
-        ]);
+                Date.parse(data[i].day),
+                parseFloat(data[i].ma_price30)
+            ]);
         }
     }
 
@@ -448,7 +448,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                 format: "json"
             }, function (data) {
                 if (data.query.count == 0 && tempet > 0) {
-                    renderStockChart(stkcd, --tempet, datalen);
+                    this.renderStockChart(stkcd, --tempet, datalen);
                     return;
                 }
 

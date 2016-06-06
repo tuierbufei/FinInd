@@ -3,7 +3,8 @@
  */
 
 define(['jquery', 'chartjs'], function ($, Chart) {
-    var chartGroup = [{
+    var chartGroup = [
+        {
             column: {
                 营业收入: 'bar',
                 扣非净利润: 'bar'
@@ -98,6 +99,7 @@ define(['jquery', 'chartjs'], function ($, Chart) {
     }
 
     return {
+        chartData : chartData,
         createChart: function (container) {
             $.each(chartGroup, function (i) {
                 var datasets = [];
@@ -134,10 +136,10 @@ define(['jquery', 'chartjs'], function ($, Chart) {
                         options.scales = {
                             xAxes: [{
                                 stacked: true
-                    }],
+                            }],
                             yAxes: [{
                                 stacked: true
-                    }]
+                            }]
                         }
                     }
 
@@ -159,7 +161,7 @@ define(['jquery', 'chartjs'], function ($, Chart) {
                                 position: "left",
                                 id: "y-axis-1",
                                 stacked: this.option.stack ? true : false
-                    }, {
+                            }, {
                                 type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
                                 display: true,
                                 position: "right",
@@ -169,7 +171,7 @@ define(['jquery', 'chartjs'], function ($, Chart) {
                                 gridLines: {
                                     drawOnChartArea: false, // only want the grid lines for one axis to show up
                                 },
-                    }],
+                            }],
                         }
                     }
                 }

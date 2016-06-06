@@ -1,7 +1,7 @@
 /**
  * Created by cxh on 2016/4/25.
  */
-define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'company/report', 'company/customReport', 'bootstrap.min', 'typeahead.bundle.min'], function ($, bootstrap, domReady, stockInfo, stockChart, report, customReport) {
+define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'company/report', 'company/customReport', 'company/chart', 'bootstrap.min', 'typeahead'], function ($, domReady, stockInfo, stockChart, report, customReport, chart) {
     var isReload = {
             main: true,
             benefit: true,
@@ -40,10 +40,10 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
             },
             templates: {
                 empty: [
-                '<div class="empty-message">',
-                '未找到符合条件的结果',
-                '</div>'
-            ].join('\n'),
+                    '<div class="empty-message">',
+                    '未找到符合条件的结果',
+                    '</div>'
+                ].join('\n'),
                 suggestion: function (suggest) {
                     var item = '<div class="suggetstion-item-container">';
                     var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
@@ -116,7 +116,6 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
                         matches.push(match);
                     });
 
-                    console.log(matches);
                     cb(matches);
                 } else {
                     cb([]);
@@ -129,14 +128,14 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
 
     function createAllReport() {
         loadCount = 0;
-        customDataYear = [];
-        customDataLoadedColumn = [];
-        $.each(customData, function (columnName) {
-            customData[columnName] = [];
+        customReport.customDataYear = [];
+        customReport.customDataLoadedColumn = [];
+        $.each(customReport.customData, function (columnName) {
+            customReport.customData[columnName] = [];
         });
 
-        $.each(customColumnFormula, function (columnName) {
-            chartData[columnName] = [];
+        $.each(customReport.customColumnFormula, function (columnName) {
+            chart.chartData[columnName] = [];
         });
 
         $.each(isReload, function (type) {

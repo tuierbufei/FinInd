@@ -1,15 +1,17 @@
 requirejs.config({
-    baseUrl: 'assert/js',
+    baseUrl: 'assert/lib',
     paths: {
-        app: '../app',
-        company: '../app/company',
-        industry: '../app/industry',
+        app: '../../app',
+        company: '../../app/company',
+        industry: '../../app/industry',
         jquery: 'jquery-1.9.1',
         highstock: 'highstock',
         chartjs: "Chart.min",
         bootstrap: 'bootstrap.min',
         lexer: 'lexer',
-        shunt: 'shunt'
+        shunt: 'shunt',
+        typeahead: 'typeahead.bundle.min',
+        light7: 'light7'
     },
     shim: {
         highstock: {
@@ -28,6 +30,17 @@ requirejs.config({
         },
         shunt: {
             exports: 'Parser'
+        },
+        typeahead: {
+            deps: ['jquery'],
+            exports: 'Bloodhound',
+            init: function ($) {
+                return require.s.contexts._.registry['typeahead.js'].factory($);
+            }
+        },
+        light7: {
+            deps: ['jquery'],
+            exports:
         }
     }
 });

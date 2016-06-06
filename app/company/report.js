@@ -2,7 +2,7 @@
  * Created by cxh on 2016/4/25.
  */
 
-define(['jquery', 'customReport'], function ($, customReport) {
+define(['jquery', 'company/customReport'], function ($, customReport) {
     return {
         createReport: function (panel, stkcd, type, callBack, attempt) {
             $.getJSON("http://query.yahooapis.com/v1/public/yql", {
@@ -11,7 +11,7 @@ define(['jquery', 'customReport'], function ($, customReport) {
             }, function (data) {
                 if ((data.query.count == 0 || data.query.count == '0') && attempt > 0) {
                     attempt--;
-                    createReport(panel, stkcd, type, callBack, attempt);
+                    this.createReport(panel, stkcd, type, callBack, attempt);
 
                     return;
                 }

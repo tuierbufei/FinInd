@@ -3,7 +3,7 @@
  */
 // cunstom column name and formula to calcuate from custom data.
 
-define(['jquery', 'company/parser', 'chartjs'], function ($, parser, chart) {
+define(['jquery', 'company/parser', 'company/chart'], function ($, parser, chart) {
     var unit = {
         万: 0.01,
         百万: 100,
@@ -77,6 +77,10 @@ define(['jquery', 'company/parser', 'chartjs'], function ($, parser, chart) {
     }
     
     return {
+        customDataYear : customDataYear,
+        customData : customData,
+        customDataLoadedColumn : customDataLoadedColumn,
+        customColumnFormula: customColumnFormula,
         createCustomReport: function (panel) {
             var outer = $('<div class="table-outer-container"/>');
             var inner = $('<div class="table-inner-container"/>');

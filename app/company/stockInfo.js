@@ -11,7 +11,7 @@ define(['jquery'], function ($) {
             }, function (data) {
                 if ((data.query.count == 0 || data.query.count == '0') && attempt > 0) {
                     attempt--;
-                    createStockInfo(panel, market, stkcd, attempt);
+                    this.createStockInfo(panel, market, stkcd, attempt);
 
                     return;
                 }
