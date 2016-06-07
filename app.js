@@ -39,8 +39,7 @@ requirejs.config({
             }
         },
         light7: {
-            deps: ['jquery'],
-            exports:
+            deps: ['jquery']
         }
     }
 });

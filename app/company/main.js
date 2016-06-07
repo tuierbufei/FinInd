@@ -1,7 +1,7 @@
 /**
  * Created by cxh on 2016/4/25.
  */
-define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'company/report', 'company/customReport', 'company/chart', 'bootstrap.min', 'typeahead'], function ($, domReady, stockInfo, stockChart, report, customReport, chart) {
+define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'company/report', 'company/customReport', 'company/chart', 'bootstrap', 'typeahead', 'light7'], function ($, domReady, stockInfo, stockChart, report, customReport, chart) {
     var isReload = {
             main: true,
             benefit: true,
@@ -28,6 +28,7 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
     };
 
     domReady(function () {
+        $.init();
         $('#loadding').hide();
 
         // input the stock search criteria
