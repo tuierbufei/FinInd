@@ -39,7 +39,10 @@ requirejs.config({
             }
         },
         light7: {
-            deps: ['jquery']
+            deps: ['jquery'],
+            init: function (jquery) {
+                jquery.support.cors = true;
+            }
         }
     }
 });
