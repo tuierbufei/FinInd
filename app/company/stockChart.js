@@ -436,19 +436,20 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
     }
 
     return {
-        renderStockChart: function (stkcd, tempet, datalen) {
+        render: function (stkcd, tempet, datalen) {
             var stockChart = $('#stockChartContainer').highcharts();
             stockChart.showLoading('Loading...');
 
             currentStkcd = stkcd;
 
             var isGetAll = !(datalen != null && Number(datalen) === datalen && datalen % 1 === 0);
+            var self = this;
             $.getJSON("http://query.yahooapis.com/v1/public/yql", {
                 q: 'select * from xml where url=\"http://money.finance.sina.com.cn/quotes_service/api/xml.php/CN_MarketData.getKLineData?symbol=' + stkcd + '&scale=240&datalen=' + (isGetAll ? 10000 : datalen) + '\"',
                 format: "json"
             }, function (data) {
                 if (data.query.count == 0 && tempet > 0) {
-                    this.renderStockChart(stkcd, --tempet, datalen);
+                    self.render(stkcd, --tempet, datalen);
                     return;
                 }
 
