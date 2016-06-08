@@ -22,7 +22,7 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
         if (loadCount == 0) {
             $('#stkcdSearch').button('reset');
             $('#custom').empty();
-            customReport.createCustomReport($('#custom'));
+            customReport.render($('#custom'));
             $('#loadding').hide();
         }
     };
@@ -65,10 +65,10 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
             stkcd = suggestion.value;
 
             // render stock info
-            stockInfo.createStockInfo($('#stockInfo'), suggestion.market, stkcd, attempt);
+            stockInfo.render($('#stockInfo'), suggestion.market, stkcd, attempt);
 
             // render stock chart
-            stockChart.renderStockChart(suggestion.market.toUpperCase() + stkcd, 3, 365 * 2);
+            stockChart.render(suggestion.market.toUpperCase() + stkcd, 3, 365 * 2);
 
             // render all report
             createAllReport();
@@ -77,7 +77,7 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             activeTabName = $(e.target).attr('aria-controls');
             if (!isReload[activeTabName] && activeTabName != 'custom') {
-                report.createReport($('#' + activeTabName), stkcd, activeTabName, callBack, attempt);
+                report.render($('#' + activeTabName), stkcd, activeTabName, callBack, attempt);
             }
         });
     });
@@ -129,15 +129,8 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
 
     function createAllReport() {
         loadCount = 0;
-        customReport.customDataYear = [];
-        customReport.customDataLoadedColumn = [];
-        $.each(customReport.customData, function (columnName) {
-            customReport.customData[columnName] = [];
-        });
-
-        $.each(customReport.customColumnFormula, function (columnName) {
-            chart.chartData[columnName] = [];
-        });
+        customReport.resetData();
+        chart.resetData();
 
         $.each(isReload, function (type) {
             isReload[type] = false;
@@ -145,11 +138,11 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
             if (subReport[type]) {
                 $.each(subReport[type], function (i) {
                     loadCount++;
-                    report.createReport($('#' + type), stkcd, subReport[type][i], callBack, attempt);
+                    report.render($('#' + type), stkcd, subReport[type][i], callBack, attempt);
                 });
             } else {
                 loadCount++;
-                report.createReport($('#' + type), stkcd, type, callBack, attempt);
+                report.render($('#' + type), stkcd, type, callBack, attempt);
             }
         });
     }
