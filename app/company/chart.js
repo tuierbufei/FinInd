@@ -63,7 +63,7 @@ define(['jquery', 'chartjs'], function ($, Chart) {
 
     var chartData = {};
 
-    function renderChart(container, datasets, options) {
+    function renderChart(container, datasets, options, years) {
         options.animation = {
             onComplete: function () {
                 var chartInstance = this.chart;
@@ -85,7 +85,7 @@ define(['jquery', 'chartjs'], function ($, Chart) {
         var chart = new Chart(container, {
             type: 'bar',
             data: {
-                labels: customDataYear,
+                labels: years,
                 datasets: datasets,
             },
             options: options
@@ -99,8 +99,10 @@ define(['jquery', 'chartjs'], function ($, Chart) {
     }
 
     return {
-        chartData : chartData,
-        createChart: function (container) {
+        getData : function(){
+            return chartData
+        },
+        render: function (container, customColumnFormula, years) {
             $.each(chartGroup, function (i) {
                 var datasets = [];
                 var count = 0;
@@ -175,8 +177,22 @@ define(['jquery', 'chartjs'], function ($, Chart) {
                         }
                     }
                 }
-                renderChart(ct, datasets, options);
+                renderChart(ct, datasets, options, years);
             });
+        },
+        resetData: function() {
+            $.each(chartData, function(columnName){
+                chartData[columnName] = [];
+            })
+        },
+        addColumnData: function(columnName, data) {
+            if(chartData[columnName] instanceof Array) {
+                chartData[columnName].push(data);
+            } else {
+                chartData[columnName] = [];
+                chartData[columnName].push(data);
+            }
+            
         }
     };
 });
