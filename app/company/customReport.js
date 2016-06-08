@@ -75,13 +75,27 @@ define(['jquery', 'company/parser', 'company/chart'], function ($, parser, chart
 
         return value;
     }
-    
+
     return {
-        customDataYear : customDataYear,
-        customData : customData,
-        customDataLoadedColumn : customDataLoadedColumn,
-        customColumnFormula: customColumnFormula,
-        createCustomReport: function (panel) {
+        getYears: function () {
+            return customDataYear;
+        },
+        data: function () {
+            return customData;
+        },
+        getColumnData: function (columnName) {
+            return customData[columnName];
+        },
+        getColumnName : function() {
+            return customColumnFormulaName;
+        },
+        getloadedColumn: function () {
+            return customDataLoadedColumn;
+        },
+        getFormula: function () {
+            return customColumnFormula;
+        },
+        render: function (panel) {
             var outer = $('<div class="table-outer-container"/>');
             var inner = $('<div class="table-inner-container"/>');
             var table = $('<table id="table" class="table table-bordered table-striped table-condensed">');
@@ -178,7 +192,7 @@ define(['jquery', 'company/parser', 'company/chart'], function ($, parser, chart
                         }
 
                         tRow.append($('<td>').html(dataUnit == '%' ? cellData + "%" : cellData));
-                        chartData[columnName].push(parseFloat(cellData));
+                        chart.addColumnData(columnName, parseFloat(cellData));
                     });
                 } else {
                     $.each(customData[this[0]], function (i) {
@@ -196,7 +210,7 @@ define(['jquery', 'company/parser', 'company/chart'], function ($, parser, chart
                             cellData = parseFloat(this).toFixed(2);
                         }
                         tRow.append($('<td>').html(dataUnit == '%' ? cellData + "%" : cellData));
-                        chartData[columnName].push(parseFloat(cellData));
+                        chart.addColumnData(columnName, parseFloat(cellData));
                     });
                 }
 
@@ -231,7 +245,53 @@ define(['jquery', 'company/parser', 'company/chart'], function ($, parser, chart
                 });
             });
 
-            chart.createChart(chartContainer);
+            chart.render(chartContainer, customColumnFormula, customDataYear);
+        },
+        initYear: function (years) {
+            // assign custom year by year financial repoart
+            $.each(years, function (count) {
+                if (count > 9) {
+                    return false;
+                }
+                customDataYear.push(this);
+            });
+
+        },
+        isYearInitialized: function () {
+            return customDataYear.length > 1;
+        },
+        isColumnDataInitialized: function (columnName) {
+            return customDataLoadedColumn.indexOf(columnName) != -1;
+        },
+        addColumnData: function (columName, data) {
+            // custom data assign
+            $.each(data, function (i) {
+                customData[columName].push(this);
+            });
+
+            // avoid duplicate assign value
+            customDataLoadedColumn.push(columName);
+
+            if (customData.hasOwnProperty('上一年' + columName) && customDataLoadedColumn.indexOf('上一年' + columName) == -1) {
+                $.each(data, function (i) {
+                    if (i > 0) {
+                        customData['上一年' + columName].push(this);
+                    }
+                });
+
+                // avoid duplicate assign value
+                customDataLoadedColumn.push('上一年' + columName);
+            }
+        },
+        containsColumnName: function (columnName) {
+            return customData.hasOwnProperty(columnName);
+        },
+        resetData: function () {
+            customDataYear = [];
+            customDataLoadedColumn = [];
+            $.each(customData, function (columnName) {
+                customData[columnName] = [];
+            });
         }
     };
 });
