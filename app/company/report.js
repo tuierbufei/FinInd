@@ -4,14 +4,15 @@
 
 define(['jquery', 'company/customReport'], function ($, customReport) {
     return {
-        createReport: function (panel, stkcd, type, callBack, attempt) {
+        render: function (panel, stkcd, type, callBack, attempt) {
+            var self = this;
             $.getJSON("http://query.yahooapis.com/v1/public/yql", {
                 q: 'select * from json where url=\"http://basic.10jqka.com.cn/' + stkcd + '/flash/' + type + '.txt\"',
                 format: "json"
             }, function (data) {
                 if ((data.query.count == 0 || data.query.count == '0') && attempt > 0) {
                     attempt--;
-                    this.createReport(panel, stkcd, type, callBack, attempt);
+                    self.render(panel, stkcd, type, callBack, attempt);
 
                     return;
                 }
@@ -60,48 +61,27 @@ define(['jquery', 'company/customReport'], function ($, customReport) {
 
 
                                 if (key == 'year') {
-                                    // assign custom year by year financial repoart
-                                    if (i == 0 && customDataYear.length <= 1) {
-                                        $.each(this.json, function (count) {
-                                            if (count > 9) {
-                                                return false;
-                                            }
-                                            customDataYear.push(this);
-                                        });
-                                        // custom data assign
-                                    } else if (customData.hasOwnProperty(columName) && customDataLoadedColumn.indexOf(columName) == -1) {
-                                        $.each(this.json, function (i) {
-                                            customData[columName].push(this);
-                                        });
-
-                                        // avoid duplicate assign value
-                                        customDataLoadedColumn.push(columName);
-
-                                        if (customData.hasOwnProperty('上一年' + columName) && customDataLoadedColumn.indexOf('上一年' + columName) == -1) {
-                                            $.each(this.json, function (i) {
-                                                if (i > 0) {
-                                                    customData['上一年' + columName].push(this);
-                                                }
-                                            });
-
-                                            // avoid duplicate assign value
-                                            customDataLoadedColumn.push('上一年' + columName);
-                                        }
+                                    if (i == 0 && !customReport.isYearInitialized()) {
+                                        customReport.initYear(this.json);
+                                    } else if (customReport.containsColumnName(columName) && !customReport.isColumnDataInitialized(columName)) {
+                                        customReport.addColumnData(columName, this.json);
                                     }
                                 }
 
                                 if (key == 'report' && this.json[0].indexOf('12-31') == -1) {
-                                    if (i == 0 && customDataYear[0] != this.json[i]) {
-                                        customDataYear.unshift(this.json[i]);
-                                    } else if (customData.hasOwnProperty(columName)) {
+                                    var years = customReport.getYears();
+                                    if (i == 0 && years instanceof Array && years[0] != this.json[i]) {
+                                        years.unshift(this.json[i]);
+                                    } else if (customReport.containsColumnName(columName)) {
                                         // avoid duplicate assign value
-                                        if (customData[columName][0] != this.json[0]) {
-                                            customData[columName].unshift(this.json[0]);
+                                        var columnData = customReport.getColumnData(columName);
+                                        if (columnData instanceof Array && columnData[0] != this.json[0]) {
+                                            columnData.unshift(this.json[0]);
                                         }
 
-                                        if (customData.hasOwnProperty('上一年' + columName)) {
-                                            if (customData['上一年' + columName][0] != this.json[4]) {
-                                                customData['上一年' + columName].unshift(this.json[4]);
+                                        if (columnData.hasOwnProperty('上一年' + columName)) {
+                                            if (columnData['上一年' + columName][0] != this.json[4]) {
+                                                columnData['上一年' + columName].unshift(this.json[4]);
                                             }
                                         }
                                     }
