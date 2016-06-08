@@ -3,15 +3,16 @@
  */
 define(['jquery'], function ($) {
     return {
-        createStockInfo: function (panel, market, stkcd, attempt) {
+        render: function (panel, market, stkcd, attempt) {
             var token = '934f674c5167ef0a40bc92c387554e5b8d74a6f8';
+            var self = this;
             $.getJSON("http://query.yahooapis.com/v1/public/yql", {
                 q: 'select * from json where url=\"http://xueqiu.com/v4/stock/quote.json?code=' + market + stkcd + '&_=' + Date.parse(new Date()) + '&access_token=' + token + '\"',
                 format: "json"
             }, function (data) {
                 if ((data.query.count == 0 || data.query.count == '0') && attempt > 0) {
                     attempt--;
-                    this.createStockInfo(panel, market, stkcd, attempt);
+                    self.render(panel, market, stkcd, attempt);
 
                     return;
                 }
