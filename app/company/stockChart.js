@@ -33,7 +33,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
 
             while (i--) {
                 var candlePoint = chart.series[0].points[i];
-                if (candlePoint.open != undefined && candlePoint.close != undefined) { //如果是K线图 改变矩形条颜色，否则不变
+                if (candlePoint != undefined && candlePoint.open != undefined && candlePoint.close != undefined) { //如果是K线图 改变矩形条颜色，否则不变
                     var color = (candlePoint.open < candlePoint.close) ? red : green;
                     var seriesPointAttr = merge(series.pointAttr);
                     seriesPointAttr[''].fill = color;

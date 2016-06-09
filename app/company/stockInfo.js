@@ -4,7 +4,7 @@
 define(['jquery'], function ($) {
     return {
         render: function (panel, market, stkcd, attempt) {
-            var token = '934f674c5167ef0a40bc92c387554e5b8d74a6f8';
+            var token = 'bff0c29605109d6b05697e8fc537319e4354559d';
             var self = this;
             $.getJSON("http://query.yahooapis.com/v1/public/yql", {
                 q: 'select * from json where url=\"http://xueqiu.com/v4/stock/quote.json?code=' + market + stkcd + '&_=' + Date.parse(new Date()) + '&access_token=' + token + '\"',
@@ -17,6 +17,8 @@ define(['jquery'], function ($) {
                     return;
                 }
 
+                $('#stockInfo').empty();
+
                 if (data.query.results) {
                     if (data.query.results.error_description) {
                         panel.append('公司未找到');
@@ -24,21 +26,30 @@ define(['jquery'], function ($) {
                         var info = data.query.results[market + stkcd];
 
                         // title
-                        panel.append($('<div>').html(info.name + '[' + market + ':' + stkcd + ']'));
+                        panel.append($('<span class="stock-info-name">').html(info.name));
+                        panel.append($('<span class="stock-info-code">').html(' (' + market.toLowerCase() + stkcd + ')'));
 
                         // stock price
-                        panel.append($('<span>').html('￥' + info.current));
-                        var container = $('<span>');
-                        container.append($('<div>').html(info.change));
-                        container.append($('<div>').html('(' + info.percentage + ')'));
-                        panel.append(container);
+                        var horiztalPanel = $('<div>');
+                        var current = $('<div style="display: inline-block" class="stock-info-current">').html(info.current);
+                        var container = $('<div style="margin-left: 5px;display: inline-block">');
+                        container.append($('<div>').html((info.change >= 0 ? '+': '') + info.change));
+                        container.append($('<div>').html((info.change >= 0 ? '+': '') + info.percentage + '%'));
 
+                        horiztalPanel.append(current);
+                        horiztalPanel.append(container);
+                        panel.append(horiztalPanel);
+                        if(info.change > 0) {
+                            horiztalPanel.addClass('stock-info-change-up');
+                        } else if(info.change < 0){
+                            horiztalPanel.addClass('stock-info-change-down');
+                        }
                         //
                         var table = $('<table class="table stock-info">');
                         var tr = $('<tr>');
                         tr.append($('<td>').append('<span>今开</span><br/>' + info.open));
                         tr.append($('<td>').append('<span>昨收</span><br/>' + info.last_close));
-                        tr.append($('<td>').append('<span>振幅</span><br/>' + info.high + ' %'));
+                        tr.append($('<td>').append('<span>振幅</span><br/>' + info.amplitude + ' %'));
                         tr.append($('<td>').append('<span>换手率</span><br/>' + info.turnover_rate + ' %'));
 
                         table.append(tr);

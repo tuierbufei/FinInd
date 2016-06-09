@@ -4,6 +4,11 @@
 body{
     font-size: 12px;
 }
+
+a {
+    text-decoration:none !important;
+}
+
 .financial-table-container {
     width: 100%;
     font-size: 12px;
@@ -14,6 +19,7 @@ body{
     width:75px;
     background: white;
     border-right: 0px !important;
+    padding: 5px 0px !important;
 }
 
 .table tbody tr:nth-child(odd) .fixed-column {
@@ -105,4 +111,29 @@ body{
 
 .stock-info tr td span{
     color:#888;
+}
+
+.stock-info-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #666;
+}
+
+.stock-info-code {
+    font-weight: bold;
+    font-size: 16px;
+    color: #666;
+}
+
+.stock-info-current {
+    font-weight: bold;
+    font-size: 36px;
+}
+
+.stock-info-change-up {
+    color: #DD2200;
+}
+
+.stock-info-change-down {
+    color: #33AA11;
 }
