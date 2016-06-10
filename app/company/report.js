@@ -21,6 +21,10 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
         if (loadCount == 0) {
             customReport.dataLoadCompleted();
         }
+        
+        if($('#' + type).is(":visible")) {
+            render($('#' + type));
+        }
     };
 
     domReady(function (e) {
@@ -29,13 +33,25 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
         $.each(navs, function (index, tab) {
             $(tab).on('click', function (e) {
                 var panel = $(e.target.hash);
-                render(panel);
+                setTimeout(function() {
+                    render(panel);
+                }, 1);
             });
         });
-
     });
 
     function render(panel) {
+        if(panel == null) {
+            var container = $('#finreprotTab .active')[0];
+            if (container != undefined) {
+                setTimeout(function() {
+                    render($(container));
+                }, 1);
+            }
+            
+            return;
+        }
+        
         var id = panel.attr('id');
 
         if(isReportRendered[id]) {
@@ -46,13 +62,18 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
         $('#reportLoadding').show();
 
         if(subReport[id] != undefined) {
-            $.each(subReport, function(index, type) {
-                renderTable(panel, reportData[type]);
+            $.each(subReport, function(type) {
+                if(reportData[type] != undefined) {
+                    renderTable(panel, reportData[type]);
+                }
             });
         } else {
-            renderTable(panel, reportData[id]);
+            if(reportData[id] != undefined) {
+                renderTable(panel, reportData[id]);
+            }
         }
 
+        $('#reportLoadding').hide();
         isReportRendered[id] = true;
     }
 
@@ -140,8 +161,6 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
         });
 
         select.trigger('change');
-
-        $('#reportLoadding').hide();
     }
 
     function getData(stkcd, type, callBack, attempt) {
@@ -208,10 +227,10 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
     return {
         render: render,
         getAllData: function (stkcd) {
-            var container = $('#finreprotTab .active');
-            if (container[0] != undefined && container.is(":visible")) {
+            var container = $('#finreprotTab .active')[0];
+            if (container != undefined && $(container).is(":visible")) {
                 $('#reportLoadding').show();
-                container.empty();
+                $(container).empty();
             }
 
             loadCount = 0;
