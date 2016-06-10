@@ -7,6 +7,17 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
 
     domReady(function () {
         $.init();
+        
+        var tabLinks = $('#companyNavTabLink a');
+        $.each(tabLinks, function(index, link){
+            $(link).on('click', function (e) {
+                if(e.target.hash == '#custom') {
+                    customReport.render();
+                } else if(e.target.hash == '#finreprot') {
+                    report.render();
+                }
+            });
+        });
 
         // input the stock search criteria
         $('#stkcdInput').typeahead(null, {
