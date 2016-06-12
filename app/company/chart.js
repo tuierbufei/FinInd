@@ -192,7 +192,6 @@ define(['jquery', 'chartjs'], function ($, Chart) {
                 chartData[columnName] = [];
                 chartData[columnName].push(data);
             }
-            
         }
     };
 });

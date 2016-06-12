@@ -1,13 +1,11 @@
 /**
  * Created by cxh on 2016/4/25.
  */
-define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'company/report', 'company/customReport', 'company/chart', 'jqueryShow', 'bootstrap', 'typeahead', 'light7'], function ($, domReady, stockInfo, stockChart, report, customReport, chart) {
+define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'company/report', 'company/customReport', 'bootstrap', 'typeahead'], function ($, domReady, stockInfo, stockChart, report, customReport) {
     var stkcd,
         attempt = 3;
 
     domReady(function () {
-        $.init();
-        
         var tabLinks = $('#companyNavTabLink a');
         $.each(tabLinks, function(index, link){
             $(link).on('click', function (e) {
@@ -49,14 +47,16 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
         $('.typeahead').bind('typeahead:select', function (ev, suggestion) {
             stkcd = suggestion.value;
 
-            // render stock info
-            stockInfo.render($('#stockInfo'), suggestion.market, stkcd, attempt);
+            setTimeout(function(){
+                // render stock info
+                stockInfo.render($('#stockInfo'), suggestion.market, stkcd, attempt);
 
-            // render stock chart
-            stockChart.render(suggestion.market.toUpperCase() + stkcd, 3, 365 * 2);
+                // render stock chart
+                stockChart.render(suggestion.market.toUpperCase() + stkcd, 3, 365 * 2);
 
-            // render all report
-            report.getAllData(stkcd);
+                // render all report
+                report.getAllData(stkcd);
+            }, 1);
         });
     });
 

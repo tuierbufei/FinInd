@@ -21,32 +21,14 @@ define(['jquery', 'jqueryActual'], function($){
 
                 table.css('margin-left', $(column[0]).actual('outerWidth'));
 
-                tr.each(function () {
-                    var columns = $(this).children();
-
-                    var column0 = $(columns[0]).children()[0] || columns[0];
-                    var column1 = columns[1];
-
-                    var height0 = $(column0).actual('scrollHeight', { includeMargin : true, absolute : true }) + 2;
-                    var height1 = column1 ? $(column1).actual('scrollHeight', { includeMargin : true, absolute : true }) + 2 : 0;
-
-                    var height = Math.max(height0, height1);
-
-                    columns[0].style.height = height + "px";
-                    this.style.height = height + "px";
-
-                    if (column1) {
-                        column1.style.height = height + "px";
-                    }
-                });
                 //tr.each(function () {
                 //    var columns = $(this).children();
                 //
                 //    var column0 = $(columns[0]).children()[0] || columns[0];
                 //    var column1 = columns[1];
                 //
-                //    var height0 = (column0).offsetHeight;
-                //    var height1 = column1 ? column1.offsetHeight : 0;
+                //    var height0 = $(column0).actual('scrollHeight', { includeMargin : true, absolute : true }) + 2;
+                //    var height1 = column1 ? $(column1).actual('scrollHeight', { includeMargin : true, absolute : true }) + 2 : 0;
                 //
                 //    var height = Math.max(height0, height1);
                 //
@@ -56,8 +38,26 @@ define(['jquery', 'jqueryActual'], function($){
                 //    if (column1) {
                 //        column1.style.height = height + "px";
                 //    }
-                //
                 //});
+                tr.each(function () {
+                    var columns = $(this).children();
+
+                    var column0 = $(columns[0]).children()[0] || columns[0];
+                    var column1 = columns[1];
+
+                    var height0 = (column0).offsetHeight;
+                    var height1 = column1 ? column1.offsetHeight : 0;
+
+                    var height = Math.max(height0, height1);
+
+                    columns[0].style.height = height + "px";
+                    this.style.height = height + "px";
+
+                    if (column1) {
+                        column1.style.height = height + "px";
+                    }
+
+                });
             }
         },
         appendTo: function(container, table){

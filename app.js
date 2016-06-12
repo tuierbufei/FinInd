@@ -4,6 +4,7 @@ requirejs.config({
         app: '../../app',
         company: '../../app/company',
         industry: '../../app/industry',
+        data: '../../data',
         common:'../../app/common',
         jquery: 'jquery-1.9.1',
         jqueryActual : 'jquery.actual.min',
@@ -13,8 +14,10 @@ requirejs.config({
         bootstrap: 'bootstrap.min',
         lexer: 'lexer',
         shunt: 'shunt',
-        typeahead: 'typeahead.bundle.min',
-        light7: 'light7'
+        typeahead: 'typeahead.jquery.min',
+        bloodhound:'bloodhound.min',
+        light7: 'light7',
+        pinyin:'pinyin'
     },
     shim: {
         highstock: {
@@ -36,10 +39,13 @@ requirejs.config({
         },
         typeahead: {
             deps: ['jquery'],
-            exports: 'Bloodhound',
             init: function ($) {
                 return require.s.contexts._.registry['typeahead.js'].factory($);
             }
+        },
+        bloodhound: {
+            deps: ['jquery'],
+            exports: 'Bloodhound',
         },
         light7: {
             deps: ['jquery'],
@@ -52,6 +58,9 @@ requirejs.config({
         },
         jqueryShow:{
             deps: ['jquery']
+        },
+        pinyin:{
+            exports: 'Pinyin',
         }
     }
 });

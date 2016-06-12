@@ -14,7 +14,8 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
         },
         loadCount,
         attempt = 3,
-        reportData = {};
+        reportData = {},
+        currentStkcd = '';
 
     var callBack = function (type) {
         loadCount--;
@@ -33,14 +34,16 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
         $.each(navs, function (index, tab) {
             $(tab).on('click', function (e) {
                 var panel = $(e.target.hash);
-                setTimeout(function() {
-                    render(panel);
-                }, 1);
+                render(panel);
             });
         });
     });
 
     function render(panel) {
+        if(currentStkcd == '') {
+            return ;
+        }
+
         if(panel == null) {
             var container = $('#finreprotTab .active')[0];
             if (container != undefined) {
@@ -54,27 +57,33 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
         
         var id = panel.attr('id');
 
+
         if(isReportRendered[id]) {
             return ;
         }
 
-        panel.empty();
         $('#reportLoadding').show();
+        panel.empty();
+
 
         if(subReport[id] != undefined) {
             $.each(subReport, function(type) {
-                if(reportData[type] != undefined) {
-                    renderTable(panel, reportData[type]);
+                if(reportData[type] != undefined && reportData[type] != null) {
+                    isReportRendered[id] = true;
+                    setTimeout(function(){
+                        renderTable(panel, reportData[type]);
+                    },1)
+
                 }
             });
         } else {
-            if(reportData[id] != undefined) {
-                renderTable(panel, reportData[id]);
+            if(reportData[id] != undefined && reportData[id] != null) {
+                isReportRendered[id] = true;
+                setTimeout(function(){
+                    renderTable(panel, reportData[id]);
+                }, 1);
             }
         }
-
-        $('#reportLoadding').hide();
-        isReportRendered[id] = true;
     }
 
     function renderTable(panel, data) {
@@ -102,9 +111,7 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
                     tCell;
                 table.attr('id', key);
                 container.addClass('financial-table-container');
-
                 $.each(this, function (i) {
-
                     // for every data financial name
                     tRow = $('<tr>');
                     var titleLabel = '';
@@ -161,6 +168,8 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
         });
 
         select.trigger('change');
+
+        $('#reportLoadding').hide();
     }
 
     function getData(stkcd, type, callBack, attempt) {
@@ -175,7 +184,7 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
                 return;
             }
 
-            if (data.query.results) {
+            if (data.query.count != 0 && data.query.results && data.query.results != null) {
                 reportData[type] = data.query.results.json;
                 var titles = data.query.results.json['title'];
                 $.each(data.query.results.json, function (key) {
@@ -227,6 +236,7 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
     return {
         render: render,
         getAllData: function (stkcd) {
+            currentStkcd = stkcd;
             var container = $('#finreprotTab .active')[0];
             if (container != undefined && $(container).is(":visible")) {
                 $('#reportLoadding').show();
@@ -236,7 +246,7 @@ define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domRe
             loadCount = 0;
             customReport.resetData();
             $.each(reportData, function(type){
-                reportData[type] = [];
+                reportData[type] = null;
             });
             $.each(isReportRendered, function (type) {
                 isReportRendered[type] = false;

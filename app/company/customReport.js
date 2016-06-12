@@ -1,255 +1,292 @@
 /**
- * Created by cxh on 2016/4/25.
+ * Created by cxh on 2016/5/20.
  */
+// cunstom column name and formula to calcuate from custom data.
 
-define(['jquery', 'company/customReport', 'common/horizontalScrollTable', 'domReady'], function ($, customReport, horizontalScrollTable, domReady) {
-    var isReportRendered = {
-            main: false,
-            benefit: false,
-            debt: false,
-            cash: false
-        },
-        subReport = {
-            main: ['main', 'each', 'grow', 'pay', 'operate']
-        },
-        loadCount,
-        attempt = 3,
-        reportData = {};
-
-    var callBack = function (type) {
-        loadCount--;
-        if (loadCount == 0) {
-            customReport.dataLoadCompleted();
-        }
-        
-        if($('#' + type).is(":visible")) {
-            render($('#' + type));
-        }
-    };
-
-    domReady(function (e) {
-        var navs = $('#finreprotNavTabLink').find('a');
-
-        $.each(navs, function (index, tab) {
-            $(tab).on('click', function (e) {
-                var panel = $(e.target.hash);
-                setTimeout(function() {
-                    render(panel);
-                }, 1);
-            });
-        });
-    });
-
-    function render(panel) {
-        if(panel == null) {
-            var container = $('#finreprotTab .active')[0];
-            if (container != undefined) {
-                setTimeout(function() {
-                    render($(container));
-                }, 1);
-            }
-            
-            return;
-        }
-        
-        var id = panel.attr('id');
-
-        if(isReportRendered[id]) {
-            return ;
-        }
-
-        panel.empty();
-        $('#reportLoadding').show();
-
-        if(subReport[id] != undefined) {
-            $.each(subReport, function(type) {
-                if(reportData[type] != undefined) {
-                    renderTable(panel, reportData[type]);
-                }
-            });
-        } else {
-            if(reportData[id] != undefined) {
-                renderTable(panel, reportData[id]);
-            }
-        }
-
-        $('#reportLoadding').hide();
-        isReportRendered[id] = true;
+define(['jquery', 'domReady', 'company/parser', 'company/chart', 'common/horizontalScrollTable'], function ($, domReady, parser, chart, horizontalScrollTable) {
+    var unit = {
+        万: 0.01,
+        百万: 100,
+        亿: 10000,
     }
 
-    function renderTable(panel, data) {
-        var titles = data['title'],
-            select = $('<select>'),
-            option = {
-                'year': '按年报期',
-                'report': '按报告期',
-                'simple': '按单季度期'
-            };
+    var formulas = {};
 
-        for (var key in option) {
-            $("<option />", {
-                value: key,
-                text: option[key]
-            }).appendTo(select);
-        }
+    // for custom column year
+    var customDataYear = [];
+    // for custom column data extract from financial report
+    var customData = {};
+    // avoid duplicate load data
+    var customDataLoadedColumn = [];
 
-        panel.append(select);
-        $.each(data, function (key) {
-            if (key != 'title') {
-                var table = $('<table class="table table-bordered table-striped">'),
-                    container = $('<div>'),
-                    tRow,
-                    tCell;
-                table.attr('id', key);
-                container.addClass('financial-table-container');
+    var customColumnFormula = {
+        营业收入: ['营业收入', '亿'],
+        营业收入增长率: ['营业总收入同比增长率', '%'],
+        毛利率: ['销售毛利率', '%'],
+        三项费用率: ['(管理费用+销售费用+财务费用)/营业收入', '%'],
+        销售费用率: ['销售费用/营业收入', '%'],
+        管理费用率: ['管理费用/营业收入', '%'],
+        财务费用率: ['财务费用/营业收入', '%'],
+        扣非净利润: ['扣非净利润', '亿'],
+        扣非净利润率: ['扣非净利润/营业收入', '%'],
+        净利润增长率: ['(净利润-上一年净利润)/上一年净利润', '%'],
+        资产负债率: ['资产负债比率', '%'],
+        流动比率: ['流动比率', ''],
+        速动比率: ['速动比率', ''],
+        存货周转率: ['存货周转率', ''],
+        应收账款周转率: ['360/应收账款周转天数', ''],
+        固定资产比重: ['固定资产/资产总计', '%'],
+        净资产收益率ROE: ['净资产收益率', '%'],
+        总资产收益率: ['净利润/资产总计', '%'],
+        经营性现金流净额比净利润: ['经营现金流量净额/净利润', '']
+    };
 
-                $.each(this, function (i) {
+    var isCustomDataRender = false,
+        isDataLoaded = false;
 
-                    // for every data financial name
-                    tRow = $('<tr>');
-                    var titleLabel = '';
-                    if (titles[i].json && (titles[i].json instanceof Array)) {
-                        for (var j = 0; j < titles[i].json.length; j++) {
-                            titleLabel += j > 0 && titles[i].json[j] != '' ? ('(' + titles[i].json[j] + ')') : titles[i].json[j];
-                        }
-
-                    } else {
-                        titleLabel = titles[i];
-                    }
-                    tRow.append($('<th style="width:20%">').html(titleLabel));
-
-
-                    // header append <th> for year data, otherwise <td> for financial data
-                    $.each(this.json, function (j) {
-                        // only show 10 year for year term
-                        if (j > 10 && key == 'year') {
-                            return false;
-                        } else if (j > 12) {
-                            return false;
-                        }
-
-                        if (i == 0) {
-                            tCell = $('<th>').html(this);
-                        } else {
-                            tCell = $('<td>').html(this);
-                        }
-                        tRow.append(tCell);
-                    });
-
-
-                    if (i == 0) {
-                        table.append($('<thead>').append(tRow));
-                    } else {
-                        table.append(tRow);
-                    }
-                });
-                panel.append(container);
-                horizontalScrollTable.appendTo(container, table);
-                horizontalScrollTable.init(table);
-            }
+    (function () {
+        $.each(customColumnFormula, function (columnName) {
+            formulas[columnName] = parser.formulaParse(customColumnFormula[columnName][0]);
         });
 
-        select.change(function (e) {
-            var select = e.target,
-                tables = panel.find('table');
-            $.each(tables, function (i) {
-                $(this).hide();
-                if ($(this).attr('id') == $(select).find("option:selected")[0].value) {
-                    $(this).show();
+        $.each(formulas, function (columnName) {
+            $.each(this, function (i) {
+                if (this.match(/[a-z\u4e00-\u9eff]{1,20}/)) {
+                    customData[this] = [];
+
                 }
             })
         });
+    })();
 
-        select.trigger('change');
+    function calcuate(operator, operand1, operand2) {
+        var value = 0
+        switch (operator) {
+            case '+':
+                value = operand1 + operand2;
+                break;
+            case '-':
+                value = operand1 - operand2;
+                break;
+            case '*':
+                value = operand1 * operand2;
+                break;
+            case '/':
+                value = operand1 / operand2;
+                break;
+        }
+
+        return value;
     }
 
-    function getData(stkcd, type, callBack, attempt) {
-        $.getJSON("http://query.yahooapis.com/v1/public/yql", {
-            q: 'select * from json where url=\"http://basic.10jqka.com.cn/' + stkcd + '/flash/' + type + '.txt\"',
-            format: "json"
-        }, function (data) {
-            if ((data.query.count == 0 || data.query.count == '0') && attempt > 0) {
-                attempt--;
-                getData(stkcd, type, callBack, attempt);
+    function render(panel) {
+        if (isCustomDataRender || !isDataLoaded) {
+            return;
+        }
 
-                return;
-            }
+        if(panel == null) {
+            panel = $('#customContainer');
+        }
 
-            if (data.query.results) {
-                reportData[type] = data.query.results.json;
-                var titles = data.query.results.json['title'];
-                $.each(data.query.results.json, function (key) {
-                    $.each(this, function (i) {
-                        var columName = '';
-                        if (titles[i].json && (titles[i].json instanceof Array)) {
-                            columName = titles[i].json[0];
+        panel.empty();
+        $('#customLoadding').show();
+        setTimeout(function(){
+            var table = $('<table id="table" class="table table-bordered table-striped table-condensed">');
+            var chartContainer = $('<div>');
+            panel.append(chartContainer);
+            horizontalScrollTable.appendTo(panel, table);
+
+            var tRow = $('<tr>'),
+                tCell;
+            tRow.append($('<th style="border-top: 1px solid #ddd">').html('科目\\时间'));
+            $.each(customDataYear, function () {
+                tRow.append($('<th>').html(this));
+            });
+
+            table.append($('<thead>').append(tRow));
+            $.each(customColumnFormula, function (columnName) {
+                tRow = $('<tr>');
+                var dataUnit = customColumnFormula[columnName][1];
+                tRow.append($('<th>').html(unit[dataUnit] == undefined ? columnName : columnName + '(' + dataUnit + ')'));
+                if (this[0].match(/[\+\-\*\/\(\)]/) != null) {
+                    var stack = [];
+                    var temp = [];
+                    var formula = formulas[columnName].slice();
+                    while (formula.length > 0) {
+                        if (formula[0].match(/[\+\-\*\/]/)) {
+                            var operator = formula.shift();
+
+                            var operand1 = stack.shift();
+                            var operand2 = stack.shift();
+                            var left = [],
+                                right = [];
+                            if (operand2 == 'temp') {
+                                left = temp;
+                            } else if (operand2.match(/^[\-\+]?\d+(\.\d+)?/)) {
+                                left = operand2;
+                            } else {
+                                left = customData[operand2];
+                            }
+
+                            if (operand1 == 'temp') {
+                                right = temp;
+                            } else if (operand1.match(/^[\-\+]?\d+(\.\d+)?/)) {
+                                right = operand1;
+                            } else {
+                                right = customData[operand1];
+                            }
+
+                            if (left == undefined || right == undefined) {
+                                continue;
+                            }
+
+                            var len = 0;
+                            if (left instanceof Array && right instanceof Array) {
+                                len = Math.min(left.length, right.length);
+
+                                for (var i = 0; i < len; i++) {
+                                    temp[i] = calcuate(operator, parseFloat(left[i]), parseFloat(right[i]));
+                                }
+                            } else if (left instanceof Array) {
+                                len = left.length;
+
+                                for (var i = 0; i < len; i++) {
+                                    temp[i] = calcuate(operator, parseFloat(left[i]), right);
+                                }
+                            } else if (right instanceof Array) {
+                                len = right.length;
+
+                                for (var i = 0; i < len; i++) {
+                                    temp[i] = calcuate(operator, left, parseFloat(right[i]));
+                                }
+                            }
+
+                            stack.unshift('temp');
                         } else {
-                            columName = titles[i];
+                            stack.unshift(formula.shift());
                         }
-                        if (key == 'year') {
-                            if (i == 0 && !customReport.isYearInitialized()) {
-                                customReport.initYear(this.json);
-                            } else if (customReport.containsColumnName(columName) && !customReport.isColumnDataInitialized(columName)) {
-                                customReport.addColumnData(columName, this.json);
-                            }
+                    }
+
+                    $.each(temp, function (i) {
+                        if (i > 10) {
+                            return false;
                         }
 
-                        if (key == 'report' && this.json[0].indexOf('12-31') == -1) {
-                            var years = customReport.getYears();
-                            if (i == 0 && years instanceof Array && years[0] != this.json[i]) {
-                                years.unshift(this.json[i]);
-                            } else if (customReport.containsColumnName(columName)) {
-                                // avoid duplicate assign value
-                                var columnData = customReport.getColumnData(columName);
-                                if (columnData instanceof Array && columnData[0] != this.json[0]) {
-                                    columnData.unshift(this.json[0]);
-                                }
-
-                                if (columnData.hasOwnProperty('上一年' + columName)) {
-                                    if (columnData['上一年' + columName][0] != this.json[4]) {
-                                        columnData['上一年' + columName].unshift(this.json[4]);
-                                    }
-                                }
-                            }
+                        var cellData = 0;
+                        if (dataUnit == '%') {
+                            cellData = (this * 100).toFixed(2);
+                        } else if (dataUnit != '' && unit[dataUnit] != undefined) {
+                            cellData = (this / unit[dataUnit]).toFixed(2);
+                        } else {
+                            cellData = this.toFixed(2);
                         }
+
+                        tRow.append($('<td>').html(dataUnit == '%' ? cellData + "%" : cellData));
+                        chart.addColumnData(columnName, parseFloat(cellData));
                     });
+                } else {
+                    $.each(customData[this[0]], function (i) {
+                        if (i > 10) {
+                            return false;
+                        }
 
-                });
+                        var cellData = 0;
 
-                callBack(type);
+                        if (dataUnit == '%') {
+                            cellData = parseFloat(this).toFixed(2);
+                        } else if (dataUnit != '' && unit[dataUnit] != undefined) {
+                            cellData = (parseFloat(this) / unit[dataUnit]).toFixed(2);
+                        } else {
+                            cellData = parseFloat(this).toFixed(2);
+                        }
+                        tRow.append($('<td>').html(dataUnit == '%' ? cellData + "%" : cellData));
+                        chart.addColumnData(columnName, parseFloat(cellData));
+                    });
+                }
 
-            } else {
-                callBack(type);
-            }
-        });
+                table.append(tRow);
+
+                horizontalScrollTable.init(table);
+            });
+
+            chart.render(chartContainer, customColumnFormula, customDataYear);
+
+            isCustomDataRender = true;
+            $('#customLoadding').hide();
+        }, 1);
     }
 
     return {
+        getYears: function () {
+            return customDataYear;
+        },
+        data: function () {
+            return customData;
+        },
+        getColumnData: function (columnName) {
+            return customData[columnName];
+        },
         render: render,
-        getAllData: function (stkcd) {
-            var container = $('#finreprotTab .active')[0];
-            if (container != undefined && $(container).is(":visible")) {
-                $('#reportLoadding').show();
-                $(container).empty();
+        initYear: function (years) {
+            // assign custom year by year financial repoart
+            $.each(years, function (count) {
+                if (count > 9) {
+                    return false;
+                }
+                customDataYear.push(this);
+            });
+
+        },
+        isYearInitialized: function () {
+            return customDataYear.length > 1;
+        },
+        isColumnDataInitialized: function (columnName) {
+            return customDataLoadedColumn.indexOf(columnName) != -1;
+        },
+        addColumnData: function (columName, data) {
+            // custom data assign
+            $.each(data, function (i) {
+                customData[columName].push(this);
+            });
+
+            // avoid duplicate assign value
+            customDataLoadedColumn.push(columName);
+
+            if (customData.hasOwnProperty('上一年' + columName) && customDataLoadedColumn.indexOf('上一年' + columName) == -1) {
+                $.each(data, function (i) {
+                    if (i > 0) {
+                        customData['上一年' + columName].push(this);
+                    }
+                });
+
+                // avoid duplicate assign value
+                customDataLoadedColumn.push('上一年' + columName);
+            }
+        },
+        containsColumnName: function (columnName) {
+            return customData.hasOwnProperty(columnName);
+        },
+        resetData: function () {
+            isCustomDataRender = false;
+            var container = $('#customContainer');
+            if (container.is(":visible")) {
+                container.empty();
+                $('#customLoadding').show();
             }
 
-            loadCount = 0;
-            customReport.resetData();
-            $.each(reportData, function(type){
-                reportData[type] = [];
+            customDataYear = [];
+            customDataLoadedColumn = [];
+            $.each(customData, function (columnName) {
+                customData[columnName] = [];
             });
-            $.each(isReportRendered, function (type) {
-                isReportRendered[type] = false;
-                if (subReport[type]) {
-                    $.each(subReport[type], function (i, subType) {
-                        loadCount++;
-                        getData(stkcd, subType, callBack, attempt);
-                    });
-                } else {
-                    loadCount++;
-                    getData(stkcd, type, callBack, attempt);
-                }
-            });
+
+            chart.resetData();
+        },
+        dataLoadCompleted: function () {
+            isDataLoaded = true;
+            if ($('#customContainer').is(":visible")) {
+                this.render($('#customContainer'));
+            }
         }
-    }
+    };
 });

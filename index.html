@@ -17,67 +17,78 @@
 </head>
 
 <body>
-<div class="page" style="background:transparent">
-    <nav id="navTab" class="bar bar-tab">
-        <a id="companyNav" class="tab-item active" href="#">
-            <img style="width:35px;height:35px" id="companyNavIcon" data-selected="style/Img/company_select.svg" data-unselected="style/Img/company.svg"/>
-            <div class="tab-label">公司</div>
-        </a>
-        <a id="industryNav" class="tab-item" href="#">
-            <img style="width:35px;height:35px" id="industryNavIcon" data-selected="style/Img/industry_select.svg" data-unselected="style/Img/industry.svg"/>
-            <div class="tab-label">行业</div>
-        </a>
-        <a id="settingNav" class="tab-item" href="#">
-            <span class="icon icon-settings"></span>
-            <span class="tab-label">设置</span>
-        </a>
-    </nav>
-    <div class="content">
-        <nav class="navbar navbar-default" style="margin-bottom: 0px">
-            <div class="navbar-form navbar-left" role="search">
-                <div class="form-group" id="custom-templates">
-                    <input type="text" id="stkcdInput" class="form-control typeahead" style="width: 250px"
-                           placeholder="输入股票代码">
-                </div>
-                <!--<button type="submit" id="stkcdSearch" class="btn btn-default">Submit</button>-->
+<nav id="navTab" class="bar bar-tab">
+    <a id="companyNav" class="tab-item no-transition replace active" href="#company">
+        <img style="width:35px;height:35px" id="companyNavIcon" data-selected="style/Img/company_select.svg"
+             data-unselected="style/Img/company.svg" src="style/Img/company_select.svg"/>
+        <div class="tab-label">公司</div>
+    </a>
+    <a id="industryNav" class="tab-item no-transition replace" href="#industry">
+        <img style="width:35px;height:35px" id="industryNavIcon" data-selected="style/Img/industry_select.svg"
+             data-unselected="style/Img/industry.svg" src="style/Img/industry.svg"/>
+        <div class="tab-label">行业</div>
+    </a>
+    <a id="settingNav" class="tab-item no-transition replace" href="#">
+        <span class="icon icon-settings"></span>
+        <span class="tab-label">设置</span>
+    </a>
+</nav>
+
+<div class="page page-company page-current" id="company">
+    <nav class="navbar navbar-default" style="margin-bottom: 0px">
+        <div class="navbar-form navbar-left" role="search">
+            <div class="form-group" id="custom-templates">
+                <input type="text" id="stkcdInput" class="form-control typeahead" style="width: 250px"
+                       placeholder="代码/名称/拼音">
             </div>
-        </nav>
-        <div id="stockInfo">
+            <!--<button type="submit" id="stkcdSearch" class="btn btn-default">Submit</button>-->
         </div>
-        <div id="companyNavTabLink" class="buttons-tab">
-            <a href="#custom" class="tab-link active button">自定义数据</a>
-            <a href="#stockchart" class="tab-link button">k线走势</a>
-            <a href="#finreprot" class="tab-link button">财务报表</a>
+    </nav>
+    <div id="stockInfo">
+    </div>
+    <div id="companyNavTabLink" class="buttons-tab">
+        <a href="#custom" class="tab-link active button">自定义数据</a>
+        <a href="#stockchart" class="tab-link button">k线走势</a>
+        <a href="#finreprot" class="tab-link button">财务报表</a>
+    </div>
+    <div class="tabs">
+        <div id="custom" class="tab active">
+            <div id="customLoadding" style="text-align: center;position: absolute;width: 100%;display: none">
+                <img src="style/img/loading-spinning-bubbles.svg" alt="Loading icon"/>
+            </div>
+            <div id="customContainer"></div>
         </div>
-        <div class="tabs">
-            <div id="custom" class="tab active">
-                <div id="customLoadding" style="text-align: center;position: absolute;width: 100%;display: none">
+        <div id="stockchart" class="tab">
+            <div id="stockChartContainer" style="height:400px;width: 100%"></div>
+        </div>
+        <div id="finreprot" class="tab">
+            <div id="finreprotNavTabLink" class="buttons-tab">
+                <a href="#main" class="tab-link button active">财务指标</a>
+                <a href="#benefit" class="tab-link button">综合损益表</a>
+                <a href="#debt" class="tab-link button">资产负债表</a>
+                <a href="#cash" class="tab-link button">现金流量表</a>
+            </div>
+            <div id="finreprotTab" class="tabs">
+                <div id="reportLoadding" style="text-align: center;position: absolute;width: 100%;display: none">
                     <img src="style/img/loading-spinning-bubbles.svg" alt="Loading icon"/>
                 </div>
-                <div id="customContainer"></div>
-            </div>
-            <div id="stockchart" class="tab">
-                <div id="stockChartContainer" style="height:400px;width: 100%"></div>
-            </div>
-            <div id="finreprot" class="tab">
-                <div id="finreprotNavTabLink" class="buttons-tab">
-                    <a href="#main" class="tab-link button active">财务指标</a>
-                    <a href="#benefit" class="tab-link button">综合损益表</a>
-                    <a href="#debt" class="tab-link button">资产负债表</a>
-                    <a href="#cash" class="tab-link button">现金流量表</a>
-                </div>
-                <div id="finreprotTab" class="tabs">
-                    <div id="reportLoadding" style="text-align: center;position: absolute;width: 100%">
-                        <img src="style/img/loading-spinning-bubbles.svg" alt="Loading icon"/>
-                    </div>
-                    <div id="main" class="tab active">main</div>
-                    <div id="benefit" class="tab">benfit</div>
-                    <div id="debt" class="tab">debt</div>
-                    <div id="cash" class="tab">cash</div>
-                </div>
+                <div id="main" class="tab active">main</div>
+                <div id="benefit" class="tab">benfit</div>
+                <div id="debt" class="tab">debt</div>
+                <div id="cash" class="tab">cash</div>
             </div>
         </div>
     </div>
+</div>
+<div class="page page-industry" id="industry">
+    <nav class="navbar navbar-default" style="margin-bottom: 0px">
+        <div class="navbar-form navbar-left" role="search">
+            <div class="form-group">
+                <input type="text" id="industrySearch" class="form-control typeahead" style="width: 250px"
+                       placeholder="输入股票(代码/名称/拼音)查询所在的行业">
+            </div>
+        </div>
+    </nav>
 </div>
 </body>
 
