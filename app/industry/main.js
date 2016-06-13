@@ -102,7 +102,7 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 display: 'category',
                 source: categoriesEngine,
                 templates: {
-                    header: '<div class="typeaherad-templates-header">行业分类</div>'
+                    header: '<div class="suggest-dataset-split"></div><div class="typeaherad-templates-header">行业分类</div>'
                         //suggestion: function (suggest) {
                         //    var item = '<div class="suggetstion-item-container">';
                         //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
@@ -119,7 +119,7 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 display: 'industry',
                 source: industriesEngine,
                 templates: {
-                    header: '<div class="typeaherad-templates-header">行业</div>'
+                    header: '<div class="suggest-dataset-split"></div><div class="typeaherad-templates-header">行业</div>'
                         //suggestion: function (suggest) {
                         //    var item = '<div class="suggetstion-item-container">';
                         //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
@@ -136,7 +136,7 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 display: 'name',
                 source: companiesEngine,
                 templates: {
-                    header: '<div class="typeaherad-templates-header">股票</div>'
+                    header: '<div class="suggest-dataset-split"></div><div class="typeaherad-templates-header">股票</div>'
                         //suggestion: function (suggest) {
                         //    var item = '<div class="suggetstion-item-container">';
                         //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
@@ -151,6 +151,20 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
             
             $('#industrySearchContainer #industrySearch').bind('typeahead:render', function(ev, suggestion) {
                 $('#industrySearchContainer .tt-menu').css('width',$('#industrySearchContainer')[0].scrollWidth + 'px');
+            });
+
+            $("#industrySearch").on('blur',function(e){
+                $(".searchbar-overlay").removeClass("searchbar-overlay-active");
+            });
+
+            //加遮罩
+            $("#industrySearch").on('focus',function(e){
+                $(".searchbar-overlay").addClass("searchbar-overlay-active");
+            });
+
+            //禁止遮罩touch
+            $("#industry .searchbar-overlay").on("touchstart",function(e){
+                e.preventDefault();
             });
         });
 

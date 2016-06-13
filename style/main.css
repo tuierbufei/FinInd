@@ -49,19 +49,12 @@ a {
 .tt-menu {
     width:250px;
     background-color: #fff;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    margin-left:-10px;
+    margin-top:2px;
 }
 
-.tt-suggestion {
-    padding: 0px 10px 0px 0px;
-    font-size: 12px;
+#company .tt-menu {
+    margin-top:10px;
 }
 
 .tt-suggestion:hover {
@@ -94,8 +87,6 @@ a {
 }
 
 .suggetstion-item-container {
-    height: 24px;
-    line-height: 20px;
     overflow: hidden;
 }
 
@@ -136,4 +127,44 @@ a {
 
 .stock-info-change-down {
     color: #33AA11;
+}
+
+.twitter-typeahead {
+    width:100%;
+}
+
+.searchbar-overlay.searchbar-overlay-active {
+    opacity: 1;
+    background: #ddd !important;
+    pointer-events: auto;
+}
+
+.searchbar-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(0,0,0,.4)!important;
+    -webkit-transition-duration: 300ms;
+    transition-duration: 300ms;
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+}
+
+.suggest-dataset-split {
+    background: rgba(0,0,0,.13);
+    width: 100%;
+    height: 8px;
+}
+
+.tt-suggestion {
+    font-size: 2em;
+    padding: 5px 0;
+}
+.tt-dataset-stkcd {
+    margin-top:8px;
 }

@@ -4,8 +4,9 @@
 define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'company/report', 'company/customReport', 'bootstrap', 'typeahead'], function ($, domReady, stockInfo, stockChart, report, customReport) {
     var stkcd,
         attempt = 3;
-    
+
     domReady(function () {
+
         var tabLinks = $('#companyNavTabLink a');
         $.each(tabLinks, function(index, link){
             $(link).on('click', function (e) {
@@ -33,7 +34,7 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
                 ].join('\n'),
                 suggestion: function (suggest) {
                     var item = '<div class="suggetstion-item-container">';
-                    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
+                    var style = ['width:104px;line-height: 22px', 'width:150px', 'width:80px', 'width:60px; text-align: right; color: rgb(169, 169, 169);'];
                     $.each(suggest.data, function (i) {
                         item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
                     });
@@ -43,10 +44,6 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
             }
         });
         
-        $('#companySearchContainer .typeahead').bind('typeahead:render', function(ev, suggestion) {
-          $('#companySearchContainer .tt-menu').css('width',$('#companySearchContainer')[0].scrollWidth + 'px');
-        });
-
         // on select the suggestion
         $('#companySearchContainer .typeahead').bind('typeahead:select', function (ev, suggestion) {
             stkcd = suggestion.value;
@@ -61,6 +58,24 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
                 // render all report
                 report.getAllData(stkcd);
             }, 1);
+        });
+
+        $('#companySearchContainer .typeahead').bind('typeahead:render', function(ev, suggestion) {
+            $('#companySearchContainer .tt-menu').css('width',$('#companySearchContainer')[0].scrollWidth + 'px');
+        });
+
+        $("#stkcdInput").on('blur',function(e){
+            $(".searchbar-overlay").removeClass("searchbar-overlay-active");
+        });
+
+        //加遮罩
+        $("#stkcdInput").on('focus',function(e){
+            $(".searchbar-overlay").addClass("searchbar-overlay-active");
+        });
+
+        //禁止遮罩touch
+        $("#company .searchbar-overlay").on("touchstart",function(e){
+            e.preventDefault();
         });
     });
 
