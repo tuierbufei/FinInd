@@ -3,12 +3,16 @@
  */
 define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], function ($, domReady, Pinyin, Bloodhound) {
     var pinyin = new Pinyin;
-    var categories = [], industries = [], companies = [];
+    var categories = [],
+        industries = [],
+        companies = [];
 
     domReady(function () {
         require(['json!data/industry.json'], function (data) {
             $.each(data, function (index, item) {
-                categories.push({category: item.category});
+                categories.push({
+                    category: item.category
+                });
                 $.each(item.industries, function (industryIndex, industryItem) {
                     var industry = {
                         category: item.category,
@@ -30,45 +34,84 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
 
             var categoriesEngine = new Bloodhound({
                 datumTokenizer: function (datum) {
-                    return Bloodhound.tokenizers.obj.nonword('category');
+                    var tokens = [];
+                    var stringSize = datum.category.length;
+                    for (var size = 1; size <= stringSize; size++) {
+                        for (var i = 0; i + size <= stringSize; i++) {
+                            tokens.push(datum.category.substr(i, size));
+                        }
+                    }
+
+                    return tokens;
                 },
-                queryTokenizer: Bloodhound.tokenizers.nonword,
-                // `states` is an array of state names defined in "The Basics"
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
                 local: categories
             });
 
             var industriesEngine = new Bloodhound({
                 datumTokenizer: function (datum) {
-                    return Bloodhound.tokenizers.obj.nonword('industry');
+                    var tokens = [];
+                    var stringSize = datum.industry.length;
+                    for (var size = 1; size <= stringSize; size++) {
+                        for (var i = 0; i + size <= stringSize; i++) {
+                            tokens.push(datum.industry.substr(i, size));
+                        }
+                    }
+
+                    return tokens;
                 },
-                queryTokenizer: Bloodhound.tokenizers.nonword,
-                // `states` is an array of state names defined in "The Basics"
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
                 local: industries
             });
 
             var companiesEngine = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.nonword('name', 'code', 'pycode'),
-                queryTokenizer: Bloodhound.tokenizers.nonword,
-                // `states` is an array of state names defined in "The Basics"
+                datumTokenizer: function(datum) {
+                    var tokens = [];
+                    var stringSize = datum.name.length;
+                    for (var size = 1; size <= stringSize; size++) {
+                        for (var i = 0; i + size <= stringSize; i++) {
+                            tokens.push(datum.name.substr(i, size));
+                        }
+                    }
+                    
+                    var stringSize = datum.code.length;
+                    for (var size = 1; size <= stringSize; size++) {
+                        for (var i = 0; i + size <= stringSize; i++) {
+                            tokens.push(datum.code.substr(i, size));
+                        }
+                    }
+                    
+                    var stringSize = datum.pycode.length;
+                    for (var size = 1; size <= stringSize; size++) {
+                        for (var i = 0; i + size <= stringSize; i++) {
+                            tokens.push(datum.pycode.substr(i, size));
+                        }
+                    }
+
+                    return tokens;
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
                 local: companies
             });
 
-            $('#industrySearch').typeahead({highlight: true}, {
+            $('#industrySearch').typeahead({
+                highlight: true
+            }, {
                 name: 'category',
                 limit: 5,
                 display: 'category',
                 source: categoriesEngine,
                 templates: {
-                    header: '<h3 class="league-name">行业分类</h3>'
-                    //suggestion: function (suggest) {
-                    //    var item = '<div class="suggetstion-item-container">';
-                    //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
-                    //    $.each(suggest.data, function (i) {
-                    //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
-                    //    });
-                    //    item += '</div>';
-                    //    return item;
-                    //}
+                    header: '<div class="typeaherad-templates-header">行业分类</div>'
+                        //suggestion: function (suggest) {
+                        //    var item = '<div class="suggetstion-item-container">';
+                        //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
+                        //    $.each(suggest.data, function (i) {
+                        //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
+                        //    });
+                        //    item += '</div>';
+                        //    return item;
+                        //}
                 }
             }, {
                 name: 'industry',
@@ -76,16 +119,16 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 display: 'industry',
                 source: industriesEngine,
                 templates: {
-                    header: '<h3 class="league-name">行业</h3>'
-                    //suggestion: function (suggest) {
-                    //    var item = '<div class="suggetstion-item-container">';
-                    //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
-                    //    $.each(suggest.data, function (i) {
-                    //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
-                    //    });
-                    //    item += '</div>';
-                    //    return item;
-                    //}
+                    header: '<div class="typeaherad-templates-header">行业</div>'
+                        //suggestion: function (suggest) {
+                        //    var item = '<div class="suggetstion-item-container">';
+                        //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
+                        //    $.each(suggest.data, function (i) {
+                        //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
+                        //    });
+                        //    item += '</div>';
+                        //    return item;
+                        //}
                 }
             }, {
                 name: 'ccompany',
@@ -93,17 +136,21 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 display: 'name',
                 source: companiesEngine,
                 templates: {
-                    header: '<h3 class="league-name">股票</h3>'
-                    //suggestion: function (suggest) {
-                    //    var item = '<div class="suggetstion-item-container">';
-                    //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
-                    //    $.each(suggest.data, function (i) {
-                    //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
-                    //    });
-                    //    item += '</div>';
-                    //    return item;
-                    //}
+                    header: '<div class="typeaherad-templates-header">股票</div>'
+                        //suggestion: function (suggest) {
+                        //    var item = '<div class="suggetstion-item-container">';
+                        //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
+                        //    $.each(suggest.data, function (i) {
+                        //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
+                        //    });
+                        //    item += '</div>';
+                        //    return item;
+                        //}
                 }
+            });
+            
+            $('#industrySearchContainer #industrySearch').bind('typeahead:render', function(ev, suggestion) {
+                $('#industrySearchContainer .tt-menu').css('width',$('#industrySearchContainer')[0].scrollWidth + 'px');
             });
         });
 
