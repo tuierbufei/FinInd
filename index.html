@@ -35,15 +35,16 @@
 </nav>
 
 <div class="page page-company page-current" id="company">
-    <nav class="navbar navbar-default" style="margin-bottom: 0px">
-        <div class="navbar-form navbar-left" role="search">
-            <div class="form-group" id="custom-templates">
-                <input type="text" id="stkcdInput" class="form-control typeahead" style="width: 250px"
-                       placeholder="代码/名称/拼音">
-            </div>
-            <!--<button type="submit" id="stkcdSearch" class="btn btn-default">Submit</button>-->
+   
+    <div class="bar" style="position:relative;z-index:100" id="companySearchContainer">
+        <div class="searchbar">
+          <a class="searchbar-cancel" style="font-weight:blod">取消</a>
+          <div class="search-input">
+            <label class="icon icon-search" for="search"></label>
+            <input type="search" id='stkcdInput' class="typeahead" style="padding-left:1.4rem" placeholder='代码/名称/拼音'/>
+          </div>
         </div>
-    </nav>
+      </div>
     <div id="stockInfo">
     </div>
     <div id="companyNavTabLink" class="buttons-tab">
@@ -81,14 +82,15 @@
     </div>
 </div>
 <div class="page page-industry" id="industry">
-    <nav class="navbar navbar-default" style="margin-bottom: 0px">
-        <div class="navbar-form navbar-left" role="search">
-            <div class="form-group">
-                <input type="text" id="industrySearch" class="form-control typeahead" style="width: 250px"
-                       placeholder="输入股票(代码/名称/拼音)查询所在的行业">
-            </div>
-        </div>
-    </nav>
+  <div class="bar" style="position:relative;z-index:100" id="industrySearchContainer">
+    <div class="searchbar">
+      <a class="searchbar-cancel" style="font-weight:blod">取消</a>
+      <div class="search-input">
+        <label class="icon icon-search" for="search"></label>
+        <input type="search" id='industrySearch' style="padding-left:1.4rem" placeholder='输入股票(代码/名称/拼音)查询所在的行业'/>
+      </div>
+    </div>
+  </div>
 </div>
 </body>
 
