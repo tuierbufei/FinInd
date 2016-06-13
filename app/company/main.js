@@ -4,7 +4,7 @@
 define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'company/report', 'company/customReport', 'bootstrap', 'typeahead'], function ($, domReady, stockInfo, stockChart, report, customReport) {
     var stkcd,
         attempt = 3;
-
+    
     domReady(function () {
         var tabLinks = $('#companyNavTabLink a');
         $.each(tabLinks, function(index, link){
@@ -42,9 +42,13 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
                 }
             }
         });
+        
+        $('#companySearchContainer .typeahead').bind('typeahead:render', function(ev, suggestion) {
+          $('#companySearchContainer .tt-menu').css('width',$('#companySearchContainer')[0].scrollWidth + 'px');
+        });
 
         // on select the suggestion
-        $('.typeahead').bind('typeahead:select', function (ev, suggestion) {
+        $('#companySearchContainer .typeahead').bind('typeahead:select', function (ev, suggestion) {
             stkcd = suggestion.value;
 
             setTimeout(function(){
