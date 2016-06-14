@@ -34,7 +34,7 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
                 ].join('\n'),
                 suggestion: function (suggest) {
                     var item = '<div class="suggetstion-item-container">';
-                    var style = ['width:104px;line-height: 22px', 'width:150px', 'width:80px', 'width:60px; text-align: right; color: rgb(169, 169, 169);'];
+                    var style = ['width:25%;line-height: 1.3rem', 'width:35%', 'width:20%', 'text-align: right; color: rgb(169, 169, 169);float:right'];
                     $.each(suggest.data, function (i) {
                         item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
                     });
@@ -47,7 +47,7 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
         // on select the suggestion
         $('#companySearchContainer .typeahead').bind('typeahead:select', function (ev, suggestion) {
             stkcd = suggestion.value;
-
+            $("#company .searchbar-overlay").removeClass("searchbar-overlay-active");
             setTimeout(function(){
                 // render stock info
                 stockInfo.render($('#stockInfo'), suggestion.market, stkcd, attempt);
@@ -61,16 +61,20 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
         });
 
         $('#companySearchContainer .typeahead').bind('typeahead:render', function(ev, suggestion) {
-            $('#companySearchContainer .tt-menu').css('width',$('#companySearchContainer')[0].scrollWidth + 'px');
+            $('#companySearchContainer .tt-menu').css('width',$('#companySearchContainer')[0].clientWidth + 'px');
         });
 
         $("#stkcdInput").on('blur',function(e){
-            $(".searchbar-overlay").removeClass("searchbar-overlay-active");
+            if(stkcd != null && stkcd != '') {
+                $("#company .searchbar-overlay").removeClass("searchbar-overlay-active");
+            }
         });
 
         //加遮罩
         $("#stkcdInput").on('focus',function(e){
-            $(".searchbar-overlay").addClass("searchbar-overlay-active");
+            if(stkcd != null && stkcd != '') {
+                $("#company .searchbar-overlay").addClass("searchbar-overlay-active");
+            }
         });
 
         //禁止遮罩touch

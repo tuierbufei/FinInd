@@ -103,15 +103,6 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 source: categoriesEngine,
                 templates: {
                     header: '<div class="suggest-dataset-split"></div><div class="typeaherad-templates-header">行业分类</div>'
-                        //suggestion: function (suggest) {
-                        //    var item = '<div class="suggetstion-item-container">';
-                        //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
-                        //    $.each(suggest.data, function (i) {
-                        //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
-                        //    });
-                        //    item += '</div>';
-                        //    return item;
-                        //}
                 }
             }, {
                 name: 'industry',
@@ -120,15 +111,6 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 source: industriesEngine,
                 templates: {
                     header: '<div class="suggest-dataset-split"></div><div class="typeaherad-templates-header">行业</div>'
-                        //suggestion: function (suggest) {
-                        //    var item = '<div class="suggetstion-item-container">';
-                        //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
-                        //    $.each(suggest.data, function (i) {
-                        //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
-                        //    });
-                        //    item += '</div>';
-                        //    return item;
-                        //}
                 }
             }, {
                 name: 'ccompany',
@@ -136,16 +118,18 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 display: 'name',
                 source: companiesEngine,
                 templates: {
-                    header: '<div class="suggest-dataset-split"></div><div class="typeaherad-templates-header">股票</div>'
-                        //suggestion: function (suggest) {
-                        //    var item = '<div class="suggetstion-item-container">';
-                        //    var style = ['width:54px;line-height: 22px', 'width:75px', 'width:40px', 'width:30px; text-align: right; color: rgb(169, 169, 169);'];
-                        //    $.each(suggest.data, function (i) {
-                        //        item += '<span' + ' style=\"' + style[i] + '\">' + this + '</span>';
-                        //    });
-                        //    item += '</div>';
-                        //    return item;
-                        //}
+                    header: '<div class="suggest-dataset-split"></div><div class="typeaherad-templates-header">股票</div>',
+                    suggestion: function (suggest) {
+                        //var item = '<div >';
+                        var item = '<div class="suggetstion-item-container">';
+                        var style = ['width:25%;line-height: 1.3rem', 'width:35%', 'width:20%', 'text-align: right; color: rgb(169, 169, 169);float:right'];
+                            item += '<span' + ' style=\"' + style[0] + '\">' + suggest.code + '</span>';
+                            item += '<span' + ' style=\"' + style[1] + '\">' + suggest.name + '</span>';
+                            item += '<span' + ' style=\"' + style[2] + '\">' + suggest.pycode + '</span>';
+                            item += '<span' + ' style=\"' + style[3] + '\">' + suggest.industry + '</span>';
+                            item += '</div>';
+                        return item;
+                    }
                 }
             });
             
@@ -154,12 +138,12 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
             });
 
             $("#industrySearch").on('blur',function(e){
-                $(".searchbar-overlay").removeClass("searchbar-overlay-active");
+                $("#industry .searchbar-overlay").removeClass("searchbar-overlay-active");
             });
 
             //加遮罩
             $("#industrySearch").on('focus',function(e){
-                $(".searchbar-overlay").addClass("searchbar-overlay-active");
+                $("#industry .searchbar-overlay").addClass("searchbar-overlay-active");
             });
 
             //禁止遮罩touch
@@ -167,7 +151,5 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                 e.preventDefault();
             });
         });
-
-
     });
 });

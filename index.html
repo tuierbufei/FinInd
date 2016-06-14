@@ -2,10 +2,17 @@
 <html>
 
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>公司价值分析</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-    <link href="assert/css/light7.min.css" rel="stylesheet" type="text/css"/>
     <link href="assert/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="assert/css/light7.min.css" rel="stylesheet" type="text/css"/>
 
     <link href="style/main.css" rel="stylesheet" type="text/css"/>
 
@@ -13,24 +20,23 @@
 
     <script data-main="app" src="assert/lib/require.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 
 <body>
 <nav id="navTab" class="bar bar-tab">
     <a id="companyNav" class="tab-item no-transition replace active" href="#company">
-        <img style="width:35px;height:35px" id="companyNavIcon" data-selected="style/Img/company_select.svg"
+        <img style="width:1.4rem;height:1.4rem" id="companyNavIcon" data-selected="style/Img/company_select.svg"
              data-unselected="style/Img/company.svg" src="style/Img/company_select.svg"/>
         <div class="tab-label">公司</div>
     </a>
     <a id="industryNav" class="tab-item no-transition replace" href="#industry">
-        <img style="width:35px;height:35px" id="industryNavIcon" data-selected="style/Img/industry_select.svg"
+        <img style="width:1.4rem;height:1.4rem" id="industryNavIcon" data-selected="style/Img/industry_select.svg"
              data-unselected="style/Img/industry.svg" src="style/Img/industry.svg"/>
         <div class="tab-label">行业</div>
     </a>
     <a id="settingNav" class="tab-item no-transition replace" href="#">
         <span class="icon icon-settings"></span>
-        <span class="tab-label">设置</span>
+        <div class="tab-label">设置</div>
     </a>
 </nav>
 
@@ -38,7 +44,7 @@
    
     <div class="bar" style="position:relative;z-index:100" id="companySearchContainer">
         <div class="searchbar">
-          <a class="searchbar-cancel" style="font-weight:bold">取消</a>
+          <a class="searchbar-cancel" >取消</a>
           <div class="search-input">
             <label class="icon icon-search" for="stkcdInput"></label>
             <input type="search" id='stkcdInput' class="typeahead" style="padding-left:1.4rem" placeholder='代码/名称/拼音'/>
@@ -85,7 +91,7 @@
 <div class="page page-industry" id="industry">
   <div class="bar" style="position:relative;z-index:100" id="industrySearchContainer">
     <div class="searchbar">
-      <a class="searchbar-cancel" style="font-weight:bold">取消</a>
+      <a class="searchbar-cancel" >取消</a>
       <div class="search-input">
         <label class="icon icon-search" for="industrySearch"></label>
         <input type="search" id='industrySearch' style="padding-left:1.4rem" placeholder='输入股票(代码/名称/拼音)查询所在的行业'/>

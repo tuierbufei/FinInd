@@ -9,6 +9,10 @@ a {
     text-decoration:none !important;
 }
 
+.page {
+    background: white;
+}
+
 .financial-table-container {
     width: 100%;
     font-size: 12px;
@@ -47,10 +51,9 @@ a {
 }
 
 .tt-menu {
-    width:250px;
     background-color: #fff;
-    margin-left:-10px;
-    margin-top:2px;
+    margin-left:-.5rem;
+    margin-top:.125rem;
 }
 
 #company .tt-menu {
@@ -70,11 +73,14 @@ a {
 }
 
 .tt-suggestion span {
-    margin-left: 5px;
     float: left;
-    width: 54px;
-    line-height: 20px;
+    line-height: 1.3rem;
     overflow: hidden;
+}
+
+.tt-suggestion {
+    font-size: 2em;
+    padding: 0.25rem .5rem;
 }
 
 .gist {
@@ -135,7 +141,7 @@ a {
 
 .searchbar-overlay.searchbar-overlay-active {
     opacity: 1;
-    background: #ddd !important;
+    background: #eee !important;
     pointer-events: auto;
 }
 
@@ -161,10 +167,9 @@ a {
     height: 8px;
 }
 
-.tt-suggestion {
-    font-size: 2em;
-    padding: 5px 0;
-}
 .tt-dataset-stkcd {
     margin-top:8px;
+}
+.typeaherad-templates-header{
+    padding: 0 .5rem;
 }
