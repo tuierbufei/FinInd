@@ -18,7 +18,8 @@ requirejs.config({
         bloodhound:'bloodhound.min',
         light7: 'light7',
         pinyin:'pinyin',
-        textfill:'jquery.textfill.min'
+        textfill:'jquery.textfill.min',
+        select:'jquery.select'
     },
     shim: {
         highstock: {
@@ -65,6 +66,9 @@ requirejs.config({
         },
         textfill:{
             deps: ['jquery']
+        },
+        select:{
+            deps:['jquery']
         }
     }
 });

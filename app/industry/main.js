@@ -1,7 +1,7 @@
 /**
  * Created by ThinkPad on 2016/6/11.
  */
-define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'textfill'], function ($, domReady, Pinyin, Bloodhound) {
+define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'textfill', 'select'], function ($, domReady, Pinyin, Bloodhound) {
     var pinyin = new Pinyin;
     var categories = [],
         industries = [],
@@ -134,10 +134,10 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
             });
             
             $('#industrySearchContainer #industrySearch').bind('typeahead:render', function(ev, suggestion) {
-                $('#industrySearchContainer .tt-menu').css('width',$('#industrySearchContainer')[0].scrollWidth + 'px');
+                $('#industrySearchContainer .tt-menu').css('width',$('#industrySearchContainer')[0].clientWidth + 'px');
                 var industryLabel = $('.industry-category');
                 $.each(industryLabel, function(){
-                    $(this).css('width', $('#industrySearchContainer')[0].scrollWidth * 0.35 + 'px');
+                    $(this).css('width', $('#industrySearchContainer')[0].clientWidth * 0.35 + 'px');
                     $(this).textfill({ maxFontPixels: 24 , widthOnly: true});
                 });
             });
@@ -155,6 +155,13 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
             $("#industry .searchbar-overlay").on("touchstart",function(e){
                 e.preventDefault();
             });
+
+            $.each(categories, function() {
+                $('#categorySelect').append('<option value="' + this.category + '">' + this.category + '</option>')
+            });
+
+            $("#categorySelect").select($('#industrySelectContainer'));
+            $('#industrySelect').select($('#industrySelectContainer'));
         });
     });
 });
