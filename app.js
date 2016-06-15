@@ -17,7 +17,8 @@ requirejs.config({
         typeahead: 'typeahead.jquery.min',
         bloodhound:'bloodhound.min',
         light7: 'light7',
-        pinyin:'pinyin'
+        pinyin:'pinyin',
+        textfill:'jquery.textfill.min'
     },
     shim: {
         highstock: {
@@ -60,7 +61,10 @@ requirejs.config({
             deps: ['jquery']
         },
         pinyin:{
-            exports: 'Pinyin',
+            exports: 'Pinyin'
+        },
+        textfill:{
+            deps: ['jquery']
         }
     }
 });
