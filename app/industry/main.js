@@ -1,7 +1,7 @@
 /**
  * Created by ThinkPad on 2016/6/11.
  */
-define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], function ($, domReady, Pinyin, Bloodhound) {
+define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'textfill'], function ($, domReady, Pinyin, Bloodhound) {
     var pinyin = new Pinyin;
     var categories = [],
         industries = [],
@@ -122,11 +122,11 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
                     suggestion: function (suggest) {
                         //var item = '<div >';
                         var item = '<div class="suggetstion-item-container">';
-                        var style = ['width:25%;line-height: 1.3rem', 'width:35%', 'width:20%', 'text-align: right; color: rgb(169, 169, 169);float:right'];
+                        var style = ['width:20%;line-height: 1.3rem', 'width:25%', 'width:15%', 'text-align: right;word-break:keep-all;white-space:nowrap;'];
                             item += '<span' + ' style=\"' + style[0] + '\">' + suggest.code + '</span>';
                             item += '<span' + ' style=\"' + style[1] + '\">' + suggest.name + '</span>';
                             item += '<span' + ' style=\"' + style[2] + '\">' + suggest.pycode + '</span>';
-                            item += '<span' + ' style=\"' + style[3] + '\">' + suggest.industry + '</span>';
+                            item += '<span' + ' class=\"' + 'industry-category' + '\"' + ' style=\"' + style[3] + '\">' + '<span style=\"float:right\">' + suggest.industry + '</span>' + '</span>';
                             item += '</div>';
                         return item;
                     }
@@ -135,6 +135,11 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', , 'json'], fu
             
             $('#industrySearchContainer #industrySearch').bind('typeahead:render', function(ev, suggestion) {
                 $('#industrySearchContainer .tt-menu').css('width',$('#industrySearchContainer')[0].scrollWidth + 'px');
+                var industryLabel = $('.industry-category');
+                $.each(industryLabel, function(){
+                    $(this).css('width', $('#industrySearchContainer')[0].scrollWidth * 0.35 + 'px');
+                    $(this).textfill({ maxFontPixels: 24 , widthOnly: true});
+                });
             });
 
             $("#industrySearch").on('blur',function(e){
