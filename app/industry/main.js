@@ -3,12 +3,14 @@
  */
 define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'textfill', 'select'], function ($, domReady, Pinyin, Bloodhound) {
     var pinyin = new Pinyin;
-    var categories = [],
+    var industryMap = [],
+        categories = [],
         industries = [],
         companies = [];
 
     domReady(function () {
         require(['json!data/industry.json'], function (data) {
+            industryMap = data;
             $.each(data, function (index, item) {
                 categories.push({
                     category: item.category
@@ -65,7 +67,7 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
             });
 
             var companiesEngine = new Bloodhound({
-                datumTokenizer: function(datum) {
+                datumTokenizer: function (datum) {
                     var tokens = [];
                     var stringSize = datum.name.length;
                     for (var size = 1; size <= stringSize; size++) {
@@ -73,14 +75,14 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
                             tokens.push(datum.name.substr(i, size));
                         }
                     }
-                    
+
                     var stringSize = datum.code.length;
                     for (var size = 1; size <= stringSize; size++) {
                         for (var i = 0; i + size <= stringSize; i++) {
                             tokens.push(datum.code.substr(i, size));
                         }
                     }
-                    
+
                     var stringSize = datum.pycode.length;
                     for (var size = 1; size <= stringSize; size++) {
                         for (var i = 0; i + size <= stringSize; i++) {
@@ -123,45 +125,74 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
                         //var item = '<div >';
                         var item = '<div class="suggetstion-item-container">';
                         var style = ['width:20%;line-height: 1.3rem', 'width:25%', 'width:15%', 'text-align: right;word-break:keep-all;white-space:nowrap;'];
-                            item += '<span' + ' style=\"' + style[0] + '\">' + suggest.code + '</span>';
-                            item += '<span' + ' style=\"' + style[1] + '\">' + suggest.name + '</span>';
-                            item += '<span' + ' style=\"' + style[2] + '\">' + suggest.pycode + '</span>';
-                            item += '<span' + ' class=\"' + 'industry-category' + '\"' + ' style=\"' + style[3] + '\">' + '<span style=\"float:right\">' + suggest.industry + '</span>' + '</span>';
-                            item += '</div>';
+                        item += '<span' + ' style=\"' + style[0] + '\">' + suggest.code + '</span>';
+                        item += '<span' + ' style=\"' + style[1] + '\">' + suggest.name + '</span>';
+                        item += '<span' + ' style=\"' + style[2] + '\">' + suggest.pycode + '</span>';
+                        item += '<span' + ' class=\"' + 'industry-category' + '\"' + ' style=\"' + style[3] + '\">' + '<span style=\"float:right\">' + suggest.industry + '</span>' + '</span>';
+                        item += '</div>';
                         return item;
                     }
                 }
             });
-            
-            $('#industrySearchContainer #industrySearch').bind('typeahead:render', function(ev, suggestion) {
-                $('#industrySearchContainer .tt-menu').css('width',$('#industrySearchContainer')[0].clientWidth + 'px');
+
+            $('#industrySearchContainer #industrySearch').bind('typeahead:render', function (ev, suggestion) {
+                $('#industrySearchContainer .tt-menu').css('width', $('#industrySearchContainer')[0].clientWidth + 'px');
                 var industryLabel = $('.industry-category');
-                $.each(industryLabel, function(){
+                $.each(industryLabel, function () {
                     $(this).css('width', $('#industrySearchContainer')[0].clientWidth * 0.35 + 'px');
-                    $(this).textfill({ maxFontPixels: 24 , widthOnly: true});
+                    $(this).textfill({
+                        maxFontPixels: 24,
+                        widthOnly: true
+                    });
                 });
             });
 
-            $("#industrySearch").on('blur',function(e){
+            $("#industrySearch").on('blur', function (e) {
                 $("#industry .searchbar-overlay").removeClass("searchbar-overlay-active");
             });
 
             //加遮罩
-            $("#industrySearch").on('focus',function(e){
+            $("#industrySearch").on('focus', function (e) {
                 $("#industry .searchbar-overlay").addClass("searchbar-overlay-active");
             });
 
             //禁止遮罩touch
-            $("#industry .searchbar-overlay").on("touchstart",function(e){
+            $("#industry .searchbar-overlay").on("touchstart", function (e) {
                 e.preventDefault();
             });
 
-            $.each(categories, function() {
-                $('#categorySelect').append('<option value="' + this.category + '">' + this.category + '</option>')
+            var container = $('#industrySelectContainer');
+            var categorySelect = $('#categorySelect');
+            var industrySelect = $('#industrySelect');
+
+            categorySelect.append('<option value="">' + '请选择行业分类' + '</option>');
+            
+            $.each(categories, function () {
+                categorySelect.append('<option value="' + this.category + '">' + this.category + '</option>');
             });
 
-            $("#categorySelect").select($('#industrySelectContainer'));
-            $('#industrySelect').select($('#industrySelectContainer'));
+            industrySelect.append('<option value="">' + '请选择行业' + '</option>');
+            
+            categorySelect.select(container);
+            industrySelect.select(container);
+
+            categorySelect.on('change', function () {
+                var select = this;
+                if($(this).val() != '') {
+                    $.each(industryMap, function(i, item) {
+                        if(industryMap[i].category == $(select).val()) {
+                            $.each(industryMap[i].industries, function(i, item) {
+                                industrySelect.append('<option value="'+ item.name +'">' + item.name + '</option>');
+                            });
+                            return false;
+                        }
+                    });
+                } else {
+                    industrySelect.find('option').remove().end().append('<option value="">' + '请选择行业' + '</option>').val('')
+                }
+                
+                industrySelect.select(container);
+            });
         });
     });
 });
