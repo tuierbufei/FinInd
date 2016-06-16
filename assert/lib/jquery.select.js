@@ -46,11 +46,9 @@
 
             $obj.wrap('<div class="skull_select" skull="' + selectId + '"></div>');
             $wrapper = $obj.parent();
-            $obj.parent().find('select')[0].offsetWidth += 10;
-            $wrapper.width($obj.parent().find('select')[0].offsetWidth);
-            $wrapper.append('<div class="skull_select_mask" style="width:' + ($obj.parent().find('select')[0].offsetWidth) + 'px' + '"></div>');
-            //$obj.parent().find('skull_select_mask:after')[0].left = ;
-            //css('skull_select_mask:after{width:' + $obj.parent().find('select')[0].offsetWidth + 'px' + '}');
+            $mask = $('<div class="skull_select_mask"></div>');
+            $wrapper.append($mask);
+            $mask.text($($obj).val());
         },
 
         // create popup html
@@ -91,6 +89,10 @@
             var self = this;
             var $select = $(".skull_select[skull=" + self._selectId + "]").find("select");
             $select.find('option').eq(index).prop('selected', true);
+            
+            var $mask = $(".skull_select[skull=" + self._selectId + "]").find(".skull_select_mask");
+            $mask.text($select.val());
+            
             $select.trigger("change");
         },
 
@@ -198,4 +200,3 @@
 
 
 })(jQuery);
-
