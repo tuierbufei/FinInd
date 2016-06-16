@@ -202,7 +202,12 @@
           }
         ],
         "name": "农、林、牧、渔服务业"
-      },
+      }
+    ]
+  },
+  {
+    "category": "采矿业",
+    "industries": [
       {
         "companies": [
           {
@@ -531,7 +536,12 @@
           }
         ],
         "name": "开采辅助活动"
-      },
+      }
+    ]
+  },
+  {
+    "category": "制造业",
+    "industries": [
       {
         "companies": [
           {
@@ -8268,7 +8278,12 @@
           }
         ],
         "name": "水的生产和供应业"
-      },
+      }
+    ]
+  },
+  {
+    "category": "建筑业",
+    "industries": [
       {
         "companies": [
           {
@@ -8599,7 +8614,12 @@
           }
         ],
         "name": "建筑装饰和其他建筑业"
-      },
+      }
+    ]
+  },
+  {
+    "category": "批发和零售业",
+    "industries": [
       {
         "companies": [
           {
@@ -9600,7 +9620,12 @@
           }
         ],
         "name": "仓储业"
-      },
+      }
+    ]
+  },
+  {
+    "category": "住宿和餐饮业",
+    "industries": [
       {
         "companies": [
           {
@@ -10314,7 +10339,12 @@
           }
         ],
         "name": "软件和信息技术服务业"
-      },
+      }
+    ]
+  },
+  {
+    "category": "金融业",
+    "industries": [
       {
         "companies": [
           {
@@ -10534,7 +10564,12 @@
           }
         ],
         "name": "其他金融业"
-      },
+      }
+    ]
+  },
+  {
+    "category": "房地产业",
+    "industries": [
       {
         "companies": [
           {
@@ -10627,7 +10662,7 @@
           },
           {
             "code": "000540",
-            "name": "��天城投"
+            "name": "中天城投"
           },
           {
             "code": "000558",
@@ -11492,7 +11527,12 @@
           }
         ],
         "name": "公共设施管理业"
-      },
+      }
+    ]
+  },
+  {
+    "category": "教育",
+    "industries": [
       {
         "companies": [
           {
@@ -11505,7 +11545,12 @@
           }
         ],
         "name": "教育"
-      },
+      }
+    ]
+  },
+  {
+    "category": "卫生和社会工作",
+    "industries": [
       {
         "companies": [
           {
@@ -11702,7 +11747,12 @@
           }
         ],
         "name": "文化艺术业"
-      },
+      }
+    ]
+  },
+  {
+    "category": "综合",
+    "industries": [
       {
         "companies": [
           {
