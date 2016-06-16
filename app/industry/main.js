@@ -165,20 +165,21 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
             var categorySelect = $('#categorySelect');
             var industrySelect = $('#industrySelect');
 
-            categorySelect.append('<option value="">' + '请选择行业分类' + '</option>');
+            categorySelect.append('<option value="请选择行业分类">' + '请选择行业分类' + '</option>');
             
             $.each(categories, function () {
                 categorySelect.append('<option value="' + this.category + '">' + this.category + '</option>');
             });
 
-            industrySelect.append('<option value="">' + '请选择行业' + '</option>');
+            industrySelect.append('<option value="请选择行业">' + '请选择行业' + '</option>');
             
             categorySelect.select(container);
             industrySelect.select(container);
 
             categorySelect.on('change', function () {
                 var select = this;
-                if($(this).val() != '') {
+                industrySelect.find('option').remove().end().append('<option value="请选择行业">' + '请选择行业' + '</option>').val('请选择行业');
+                if($(this).val() != '请选择行业分类') {
                     $.each(industryMap, function(i, item) {
                         if(industryMap[i].category == $(select).val()) {
                             $.each(industryMap[i].industries, function(i, item) {
@@ -187,11 +188,9 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
                             return false;
                         }
                     });
-                } else {
-                    industrySelect.find('option').remove().end().append('<option value="">' + '请选择行业' + '</option>').val('')
                 }
-                
-                industrySelect.select(container);
+                industrySelect.val('请选择行业').prop('selected',true);
+                industrySelect.data('selectObj').updateOption(container);
             });
         });
     });

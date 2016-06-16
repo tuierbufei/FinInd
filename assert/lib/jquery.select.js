@@ -77,6 +77,42 @@
             return $skullList;
         },
 
+        updateOption: function(container){
+            var self = this,
+                $obj = self._$obj,
+                selectId = self._selectId;
+                //opts = self._opts;
+
+            var $skullList = $('#skullList' + selectId);
+            $skullList.remove();
+
+            self._popup = $skullList = self.createSelect(container);
+            $($obj.parent().find('.skull_select_mask')[0]).text($($obj).val());
+            self.setPosition();
+            $obj.parent().on("click", function () {
+                self.show($(this).attr("skull"));
+            });
+
+
+            $skullList.on("click","li",function () {
+                $(this).siblings("li").removeClass("checked");
+                $(this).addClass("checked");
+
+                // select change value
+                var index = $(this).index();
+                self.changeSelectValue(index);
+                self.hideAll();
+            });
+
+            $("#skull_mask").on("click", function () {
+                self.hideAll();
+            });
+
+            $(window).resize(function () {
+                self.setPosition();
+            });
+        },
+
         show: function () {
             var self = this;
             $("#skull_mask").show();
@@ -140,12 +176,18 @@
             var top = (wh - oh) * 382 / 1000 + dt;// golden section ratio
             //var style = popup[0].style;
             left = Math.max(parseInt(left), dl);
-            top = Math.max(parseInt(top), dt);
-            var maxHeight = wh - 50;
+            var maxHeight = wh - 200;
             if (oh > maxHeight) {
-                top = top + 25;
                 popup.css("maxHeight", maxHeight);
             }
+
+            if(top > 0) {
+                top = Math.max(parseInt(top), dt);
+            } else {
+                top = (wh - maxHeight) * 382 / 1000 + dt;
+            }
+
+            top = top + 25;
 
             popup.css({
                 left: left,
