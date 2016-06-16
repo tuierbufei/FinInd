@@ -1,6 +1,7 @@
 .skull_select {
   position: relative;
   height: 40px;
+  width: 100%;
   line-height: 40px;
   background-color: #ffffff;
 }
@@ -11,15 +12,15 @@
   line-height: 40px;
   padding-left: 10px;
   padding-right: 25px;
-  border: #dbdbdb 1px solid;
+  border: none;
   border-radius: 3px;
   display: inline-block;
-  color: #4e5f6f;
   display: block;
-  font: normal 14px/25px "\5FAE\8F6F\96C5\9ED1", "SimSun", "\5B8B\4F53", "Arial";
   background: transparent;
+  display: none;
   -webkit-appearance: none;
 }
+
 .skull_select .skull_select_mask {
   position: absolute;
   z-index: 9;
@@ -27,7 +28,14 @@
   left: 0;
   right: 0;
   bottom: 0;
+  width: :100%;
   background: rgba(0, 0, 0, 0);
+  padding-right: 1.3rem;
+  overflow: hidden;
+  white-space: nowrap;
+  -ms-text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
 }
 .skull_select:after {
   position: absolute;
@@ -41,8 +49,8 @@
   -webkit-transform: rotate(-135deg);
   -ms-transform: rotate(-135deg);
   transform: rotate(-135deg);
-  border-top: #01d9b4 1px solid;
-  border-left: #01d9b4 1px solid;
+  border-top: #0894ec 1px solid;
+  border-left: #0894ec 1px solid;
 }
 #skull_mask {
   position: absolute;
@@ -92,13 +100,13 @@
   margin-right: 5px;
 }
 .skull_list li.checked {
-  background: #01d9b4;
+  background: #eee;
 }
 .skull_list li.checked .icon_radio {
   width: 20px;
   height: 20px;
-  background: #1a98e1;
-  border: #1a98e1 1px solid;
+  background: #0894ec;
+  border: #0894ec 1px solid;
   border-radius: 50%;
 }
 .skull_list li.checked .icon_radio:after {
