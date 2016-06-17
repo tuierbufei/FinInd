@@ -49,7 +49,7 @@
           <a class="searchbar-cancel" >取消</a>
           <div class="search-input">
             <label class="icon icon-search" for="stkcdInput"></label>
-            <input type="search" id='stkcdInput' class="typeahead" style="padding-left:1.4rem" placeholder='代码/名称/拼音'/>
+            <input type="search" id='stkcdInput' class="typeahead" style="padding-left:1.4rem" placeholder='输入股票(代码/名称/拼音)'/>
           </div>
         </div>
       </div>
@@ -96,13 +96,13 @@
       <a class="searchbar-cancel" >取消</a>
       <div class="search-input">
         <label class="icon icon-search" for="industrySearch"></label>
-        <input type="search" id='industrySearch' style="padding-left:1.4rem" placeholder='输入股票(代码/名称/拼音)查询所在的行业'/>
+        <input type="search" id='industrySearch' style="padding-left:1.4rem" placeholder='输入行业名称或股票(代码/名称/拼音)'/>
       </div>
     </div>
   </div>
   <div class="searchbar-overlay"></div>
-    <div id="industrySelectContainer" style="padding:0 .625rem">
-    <table style="width:100%;">
+  <div id="industrySelectContainer" style="padding-left:.6rem">
+     <table style="width:100%;" cellpadding="10">
         <tr>
             <td>
                 <select id="categorySelect" style="display:none"></select>
@@ -112,7 +112,10 @@
             </td>
         </tr>
     </table>
-    </div>
+  </div>
+  <div id="industryCompany" style="display: inline-block">
+    
+  </div>
 </div>
 </body>
 
