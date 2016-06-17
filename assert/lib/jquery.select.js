@@ -1,5 +1,4 @@
-;
-(function ($) {
+;(function ($) {
 
     var skullSelect = {
 
@@ -9,7 +8,7 @@
             self._$obj = $obj;
             self._selectId = selectId;
             self._opts = opts;
-
+            self._$container = container;
             self.disabledSelect();
             self._popup = $skullList = self.createSelect(container);
             self.setPosition();
@@ -19,13 +18,17 @@
 
 
             $skullList.on("click","li",function () {
+                if($(this).hasClass("checked")) {
+                    self.hideAll();
+                    return;
+                }
                 $(this).siblings("li").removeClass("checked");
                 $(this).addClass("checked");
 
                 // select change value
                 var index = $(this).index();
-                self.changeSelectValue(index);
                 self.hideAll();
+                self.changeSelectValue(index);
             });
 
             $("#skull_mask").on("click", function () {
@@ -77,10 +80,11 @@
             return $skullList;
         },
 
-        updateOption: function(container){
+        updateOption: function(){
             var self = this,
                 $obj = self._$obj,
-                selectId = self._selectId;
+                selectId = self._selectId,
+                container = self._$container;
                 //opts = self._opts;
 
             var $skullList = $('#skullList' + selectId);
@@ -95,13 +99,17 @@
 
 
             $skullList.on("click","li",function () {
+                if($(this).hasClass("checked")) {
+                    self.hideAll();
+                    return;
+                }
                 $(this).siblings("li").removeClass("checked");
                 $(this).addClass("checked");
 
                 // select change value
                 var index = $(this).index();
-                self.changeSelectValue(index);
                 self.hideAll();
+                self.changeSelectValue(index);
             });
 
             $("#skull_mask").on("click", function () {
@@ -130,6 +138,16 @@
             $mask.text($select.val());
             
             $select.trigger("change");
+        },
+        
+        selectedValue: function(value) {
+            var self = this;
+            var item = self._popup.find('ul li > label').filter(function() {
+                return $(this).text() == value;
+            });
+            if(item[0] != undefined) {
+                $(item[0]).parent().trigger('click');
+            }
         },
 
         hideAll: function () {
