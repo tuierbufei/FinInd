@@ -79,7 +79,7 @@ a {
 }
 
 .tt-suggestion {
-    font-size: 2em;
+    font-size: 1.5em;
     padding: 0.25rem .5rem;
 }
 
@@ -172,4 +172,8 @@ a {
 }
 .typeaherad-templates-header{
     padding: 0 .5rem;
+}
+
+.industry-company-item {
+    display: inline-block;
 }
