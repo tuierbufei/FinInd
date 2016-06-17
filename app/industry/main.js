@@ -6,9 +6,13 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
     var industryMap = [],
         categories = [],
         industries = [],
-        companies = [];
+        companies = [],
+        currentCategory,
+        currentIndustry,
+        defaultIndustryOptionValue = '请选择行业',
+        defaultCategoryOptionValue = '请选择行业分类';
 
-    domReady(function () {
+    function initIndustrySearchBox() {
         require(['json!data/industry.json'], function (data) {
             industryMap = data;
             $.each(data, function (index, item) {
@@ -33,6 +37,8 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
                     });
                 });
             });
+
+            updateSelectOption($('#categorySelect'), categories, 'category', defaultCategoryOptionValue);
 
             var categoriesEngine = new Bloodhound({
                 datumTokenizer: function (datum) {
@@ -135,7 +141,7 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
                 }
             });
 
-            $('#industrySearchContainer #industrySearch').bind('typeahead:render', function (ev, suggestion) {
+            $('#industrySearch').bind('typeahead:render', function (ev, suggestion) {
                 $('#industrySearchContainer .tt-menu').css('width', $('#industrySearchContainer')[0].clientWidth + 'px');
                 var industryLabel = $('.industry-category');
                 $.each(industryLabel, function () {
@@ -145,6 +151,16 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
                         widthOnly: true
                     });
                 });
+            });
+
+            $('#industrySearch').bind('typeahead:select', function (ev, suggestion) {
+                categorySelect.data('selectObj').selectedValue(suggestion.category);
+
+                if (suggestion.industry != undefined) {
+                    industrySelect.data('selectObj').selectedValue(suggestion.industry);
+                }
+
+                $('#industrySearchContainer, #industrySearch').val('');
             });
 
             $("#industrySearch").on('blur', function (e) {
@@ -160,38 +176,83 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
             $("#industry .searchbar-overlay").on("touchstart", function (e) {
                 e.preventDefault();
             });
-
-            var container = $('#industrySelectContainer');
-            var categorySelect = $('#categorySelect');
-            var industrySelect = $('#industrySelect');
-
-            categorySelect.append('<option value="请选择行业分类">' + '请选择行业分类' + '</option>');
-            
-            $.each(categories, function () {
-                categorySelect.append('<option value="' + this.category + '">' + this.category + '</option>');
-            });
-
-            industrySelect.append('<option value="请选择行业">' + '请选择行业' + '</option>');
-            
-            categorySelect.select(container);
-            industrySelect.select(container);
-
-            categorySelect.on('change', function () {
-                var select = this;
-                industrySelect.find('option').remove().end().append('<option value="请选择行业">' + '请选择行业' + '</option>').val('请选择行业');
-                if($(this).val() != '请选择行业分类') {
-                    $.each(industryMap, function(i, item) {
-                        if(industryMap[i].category == $(select).val()) {
-                            $.each(industryMap[i].industries, function(i, item) {
-                                industrySelect.append('<option value="'+ item.name +'">' + item.name + '</option>');
-                            });
-                            return false;
-                        }
-                    });
-                }
-                industrySelect.val('请选择行业').prop('selected',true);
-                industrySelect.data('selectObj').updateOption(container);
-            });
         });
+    }
+
+    function initSelect(container, select, defaultValue) {
+        select.append('<option value="' + defaultValue + '">' + defaultValue + '</option>');
+        select.select(container);
+    }
+
+    function initSelectOption(select, data, property) {
+        $.each(data, function () {
+            select.append('<option value="' + this[property] + '">' + this[property] + '</option>');
+        });
+    }
+
+    function updateSelectOption(select, data, property, defaultOptionValue) {
+        select.find('option').remove().end().append('<option value="' + defaultOptionValue + '">' + defaultOptionValue + '</option>').val(defaultOptionValue);
+        initSelectOption(select, data, property);
+        select.val(defaultIndustryOptionValue).prop('selected', true);
+        select.data('selectObj').updateOption();
+    }
+
+    function initIndustryDropDownSelect() {
+        var container = $('#industrySelectContainer');
+        var categorySelect = $('#categorySelect');
+        var industrySelect = $('#industrySelect');
+
+        initSelect(container, categorySelect, defaultCategoryOptionValue);
+        initSelect(container, industrySelect, defaultIndustryOptionValue);
+
+        categorySelect.on('change', function () {
+            var select = this;
+            var data = [];
+            if ($(select).val() != defaultCategoryOptionValue) {
+                $.each(industryMap, function (i, item) {
+                    if(item.category == $(select).val()) {
+                        data = item.industries;
+                        return false;
+                    }
+                });
+            }
+            
+            updateSelectOption(industrySelect, data, 'name', defaultIndustryOptionValue);
+            industrySelect.parent().trigger('click'); // show the popup
+        });
+
+        industrySelect.on('change', function () {
+            var data = [];
+            if ($(industrySelect).val() != defaultIndustryOptionValue) {
+                $.each(industryMap, function () {
+                    if (this.category == categorySelect.val()) {
+                        $.each(this.industries, function () {
+                            if (this.name == industrySelect.val()) {
+                                data = this.companies;
+                                return false;
+                            }
+                        });
+
+                        return false;
+                    }
+                })
+            }
+            
+            initCompaniesSelection(data);
+        });
+    }
+
+    function initCompaniesSelection(companies) {
+        $.each(companies, function() {
+            var company = $('<div class="industry-company-item">').html(this.name);
+            $('#industryCompany').append(company);
+        });
+    }
+
+    domReady(function () {
+
+        initIndustrySearchBox();
+
+        initIndustryDropDownSelect();
     });
 });
