@@ -1,7 +1,7 @@
 /**
  * Created by ThinkPad on 2016/6/11.
  */
-define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'textfill', 'select'], function ($, domReady, Pinyin, Bloodhound) {
+define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'industry/companyselect', 'typeahead', 'json', 'textfill', 'select'], function ($, domReady, Pinyin, Bloodhound, companyselect) {
     var pinyin = new Pinyin;
     var industryMap = [],
         categories = [],
@@ -10,7 +10,8 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
         currentCategory,
         currentIndustry,
         defaultIndustryOptionValue = '请选择行业',
-        defaultCategoryOptionValue = '请选择行业分类';
+        defaultCategoryOptionValue = '请选择行业分类',
+        checkedCompanies = [];
 
     function initIndustrySearchBox() {
         require(['json!data/industry.json'], function (data) {
@@ -237,16 +238,76 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
                     }
                 })
             }
-            
-            initCompaniesSelection(data);
+
+            initCompaniesSelection(data, industrySelect.val());
         });
     }
 
-    function initCompaniesSelection(companies) {
-        $.each(companies, function() {
-            var company = $('<div class="industry-company-item">').html(this.name);
-            $('#industryCompany').append(company);
+    function initCompaniesSelection(companies, industryName) {
+        var selectCompanies = [];
+        checkedCompanies = [];
+        companyselect.setCompanies(companies);
+        // default only show 10 companies;
+        $.each(companies, function(i) {
+            if(i >= 10) {
+                return false;
+            }
+
+            selectCompanies.push(companies[i]);
+            checkedCompanies.push(this.code);
         });
+
+        companyselect.setSelectedCompanies(selectCompanies);
+        companyselect.setIndustryName(industryName);
+        renderCompanyPanel($('#industryCompany'), selectCompanies, companies.length);
+    }
+
+    function renderCompanyPanel(container, selectCompanies, totalCount) {
+        container.empty();
+
+        for (var i = 0; i < checkedCompanies.length; i++) {
+            if(selectCompanies.map(function(e) {return e.code}).indexOf(checkedCompanies[i]) == -1) {
+                checkedCompanies.splice(i, 1);
+                i--
+            }
+        }
+
+        $.each(selectCompanies, function(i) {
+            var company = $('<input type="checkbox" id="' + this.code + '" class="industry-company-item">').val(this.name);
+            var item = this;
+            company.on('change', function () {
+                if(this.checked) {
+                    if(checkedCompanies.length < 10) {
+                        checkedCompanies.push(item.code);
+                    } else {
+                        this.checked = false;
+                        $.alert('最多只能选择10家公司');
+                    }
+
+                } else {
+                    var index = checkedCompanies.indexOf(item.code);
+                    if(index > -1) {
+                        checkedCompanies.splice(index, 1);
+                    }
+                }
+            });
+
+            if(checkedCompanies.indexOf(this.code) != -1) {
+                company[0].checked = true;
+            }
+
+            container.append(company);
+            container.append($('<label class="industry-company-item-label" for="' + this.code + '"></label>').html(this.name));
+        });
+
+        if(totalCount > 10) {
+            var addmore = $('<a class="company-add-link">').html('添加该行业更多公司');
+            addmore.on('click', function () {
+                $.router.loadPage('./app/industry/company-select.html');
+            });
+
+            container.append(addmore);
+        }
     }
 
     domReady(function () {
@@ -254,5 +315,9 @@ define(['jquery', 'domReady', 'pinyin', 'bloodhound', 'typeahead', 'json', 'text
         initIndustrySearchBox();
 
         initIndustryDropDownSelect();
+
+        companyselect.onConfirm(function() {
+            renderCompanyPanel($('#industryCompany'), companyselect.getSelectedCompanies(),companyselect.getCompanies().length);
+        });
     });
 });

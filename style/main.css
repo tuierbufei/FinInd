@@ -175,5 +175,30 @@ a {
 }
 
 .industry-company-item {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+#industryCompany input:checked + label {
+    background-color: #ddd;
+}
+
+.industry-company-item-label{
+    margin: 10px;
+    padding: 5px;
+    font-weight: normal;
+    border-radius: 5px;
+    width:3.2rem;
+    text-align: center;
+}
+
+.company-add-link {
     display: inline-block;
+    margin: 10px;
 }
