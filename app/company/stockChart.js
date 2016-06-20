@@ -19,6 +19,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
     var loadAllData = false;
     var currentStkcd = 'SZ002353';
     var rawData;
+    var stockName;
 
     domReady(function () {
         //修改colum条的颜色（重写了源码方法）
@@ -92,7 +93,6 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
             //var MA10 = this.points[3].y.toFixed(2);
             //var MA30 = this.points[4].y.toFixed(2);
             relativeWidth = this.points[0].point.shapeArgs.x;
-            var stockName = this.points[0].series.name;
 
             var tip = '<b>' + Highcharts.dateFormat('%Y-%m-%d  %A', this.x) + '</b><br/>';
             tip += stockName + "<br/>";
@@ -298,7 +298,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                     }
                 },
                 labels: {
-                    y: -120,
+                    y: -90,
                     overflow: false,
                     maxStaggerLines: 1,
                     distance: 20
@@ -313,7 +313,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                 title: {
                     text: ''
                 },
-                height: '75%',
+                height: '70%',
                 lineWidth: 2,
                 crosshair: {
                     snap: true
@@ -327,7 +327,7 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
                     text: '成交量'
                 },
                 top: '75%',
-                height: '25%',
+                height: '30%',
                 offset: 0,
                 lineWidth: 2
             }],
@@ -436,8 +436,9 @@ define(['jquery', 'highstock', 'domReady'], function ($, Highcharts, domReady) {
     }
 
     return {
-        render: function (stkcd, tempet, datalen) {
+        render: function (stkcd, name, tempet, datalen) {
             var stockChart = $('#stockChartContainer').highcharts();
+            stockName = name;
             stockChart.showLoading('Loading...');
 
             currentStkcd = stkcd;

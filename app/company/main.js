@@ -53,7 +53,7 @@ define(['jquery', 'domReady', 'company/stockInfo', 'company/stockChart', 'compan
                 stockInfo.render($('#stockInfo'), suggestion.market, stkcd, attempt);
 
                 // render stock chart
-                stockChart.render(suggestion.market.toUpperCase() + stkcd, 3, 365 * 2);
+                stockChart.render(suggestion.market.toUpperCase() + stkcd, suggestion.data[1], 3, 365 * 2);
 
                 // render all report
                 report.getAllData(stkcd);
