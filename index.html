@@ -44,53 +44,55 @@
 </nav>
 
 <div class="page page-company page-current" id="company">
-
-    <div class="bar" style="position:relative;z-index:100" id="companySearchContainer">
-        <div class="searchbar">
-            <a class="searchbar-cancel">取消</a>
-            <div class="search-input">
-                <label class="icon icon-search" for="stkcdInput"></label>
-                <input type="search" id='stkcdInput' class="typeahead" style="padding-left:1.4rem"
-                       placeholder='输入股票(代码/名称/拼音)'/>
+    <div class="content" style="overflow-x: hidden">
+        <div class="bar" style="position:relative;z-index:100" id="companySearchContainer">
+            <div class="searchbar">
+                <a class="searchbar-cancel">取消</a>
+                <div class="search-input">
+                    <label class="icon icon-search" for="stkcdInput"></label>
+                    <input type="search" id='stkcdInput' class="typeahead" style="padding-left:1.4rem"
+                           placeholder='输入股票(代码/名称/拼音)'/>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="searchbar-overlay searchbar-overlay-active"></div>
-    <div id="stockInfo">
-    </div>
-    <div id="companyNavTabLink" class="buttons-tab">
-        <a href="#custom" class="tab-link active button">自定义数据</a>
-        <a href="#stockchart" class="tab-link button">k线走势</a>
-        <a href="#finreprot" class="tab-link button">财务报表</a>
-    </div>
-    <div class="tabs">
-        <div id="custom" class="tab active">
-            <div id="customLoadding" style="text-align: center;position: absolute;width: 100%;display: none">
-                <img src="style/img/loading-spinning-bubbles.svg" alt="Loading icon"/>
-            </div>
-            <div id="customContainer"></div>
+        <div class="searchbar-overlay searchbar-overlay-active"></div>
+        <div id="stockInfo">
         </div>
-        <div id="stockchart" class="tab">
-            <div id="stockChartContainer" style="height:400px;width: 100%"></div>
+        <div id="companyNavTabLink" class="buttons-tab">
+            <a href="#custom" class="tab-link active button">自定义数据</a>
+            <a href="#stockchart" class="tab-link button">k线走势</a>
+            <a href="#finreprot" class="tab-link button">财务报表</a>
         </div>
-        <div id="finreprot" class="tab">
-            <div id="finreprotNavTabLink" class="buttons-tab">
-                <a href="#main" class="tab-link button active">财务指标</a>
-                <a href="#benefit" class="tab-link button">综合损益表</a>
-                <a href="#debt" class="tab-link button">资产负债表</a>
-                <a href="#cash" class="tab-link button">现金流量表</a>
-            </div>
-            <div id="finreprotTab" class="tabs">
-                <div id="reportLoadding" style="text-align: center;position: absolute;width: 100%;display: none">
+        <div class="tabs">
+            <div id="custom" class="tab active">
+                <div id="customLoadding" style="text-align: center;position: absolute;width: 100%;display: none">
                     <img src="style/img/loading-spinning-bubbles.svg" alt="Loading icon"/>
                 </div>
-                <div id="main" class="tab active">main</div>
-                <div id="benefit" class="tab">benfit</div>
-                <div id="debt" class="tab">debt</div>
-                <div id="cash" class="tab">cash</div>
+                <div id="customContainer" style="overflow:auto"></div>
+            </div>
+            <div id="stockchart" class="tab">
+                <div id="stockChartContainer" style="height:400px;width: 100%"></div>
+            </div>
+            <div id="finreprot" class="tab">
+                <div id="finreprotNavTabLink" class="buttons-tab">
+                    <a href="#main" class="tab-link button active">财务指标</a>
+                    <a href="#benefit" class="tab-link button">综合损益表</a>
+                    <a href="#debt" class="tab-link button">资产负债表</a>
+                    <a href="#cash" class="tab-link button">现金流量表</a>
+                </div>
+                <div id="finreprotTab" class="tabs">
+                    <div id="reportLoadding" style="text-align: center;position: absolute;width: 100%;display: none">
+                        <img src="style/img/loading-spinning-bubbles.svg" alt="Loading icon"/>
+                    </div>
+                    <div id="main" class="tab active">main</div>
+                    <div id="benefit" class="tab">benfit</div>
+                    <div id="debt" class="tab">debt</div>
+                    <div id="cash" class="tab">cash</div>
+                </div>
             </div>
         </div>
     </div>
+
 </div>
 
 <div class="page page-industry" id="industry">
